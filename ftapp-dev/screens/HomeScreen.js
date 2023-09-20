@@ -287,7 +287,7 @@ const HomeScreen = () => {
                 onChangeTaskText("");
                 onChangeGoalText("");
                 setSelectedManHour("0.5");
-                setSelectedStatus("未着手");
+                setSelectedStatus("To Do");
                 setDate(new Date());
               }}
             >
