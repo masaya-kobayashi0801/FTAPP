@@ -7,7 +7,6 @@ import {
   SafeAreaView,
   TextInput,
   Button,
-  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
@@ -25,7 +24,6 @@ const Task = ({ taskData, index }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [taskText, onChangeTaskText] = useState(taskData.task);
   const [goalText, onChangeGoalText] = useState(taskData.goal);
-  // const [date, setDate] = useState(taskData.date);
   const [valueDate, setValueData] = useState(new Date());
   const [date, setDate] = useState(taskData.date);
   const [time, setTime] = useState(taskData.time);
@@ -33,7 +31,6 @@ const Task = ({ taskData, index }) => {
   const [show, setShow] = useState(false);
   const [selectedManHour, setSelectedManHour] = useState(taskData.manHour);
   const [selectedStatus, setSelectedStatus] = useState(taskData.status);
-  // const [taskId, setTaskId] = useState("");
   const [enabled, setEnabled] = useState(false);
   const [triggerAlert, setTriggerAlert] = useState(true);
 
@@ -46,7 +43,6 @@ const Task = ({ taskData, index }) => {
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || valueDate;
     const str = currentDate.toLocaleString("ja-JP", { hour12: false });
-    const dateOnly = str.slice(0, 10);
     const timeOnly = str.slice(-8);
     const currentDateString = currentDate.toDateString();
     const currentTimeString = timeOnly;
@@ -64,7 +60,6 @@ const Task = ({ taskData, index }) => {
     const obj = new Date(date);
     const str = JSON.stringify(obj);
     const arr = str.split("T");
-    const datePart = arr[0];
     const timePart = arr[1];
     const newTime = `${time}.000Z`;
     const newStr = str.replace(timePart, newTime);
@@ -111,40 +106,12 @@ const Task = ({ taskData, index }) => {
     setEnabled(false);
   };
 
-  // // Set the two dates
-  // let date1 = new Date("2023-08-03T20:31:58+09:00");
-  // let date2 = new Date();
-
-  // // Calculate the difference in milliseconds
-  // let differenceInTime = date2.getTime() - date1.getTime();
-
-  // // Calculate the difference in minutes
-  // let differenceInMinutes = differenceInTime / (1000 * 60);
-
-  //   `The difference between ${date1} and ${date2} is ${differenceInMinutes} minutes.`
-  // );
-  // const now = new Date();
-  // const differenceInTime = now.getTime() - valueDate.getTime() ;
-  // const differenceInMinutes = differenceInTime / (1000 * 60);
-  //   `The difference between ${valueDate} and ${now} is ${differenceInMinutes} minutes.`
-  // );
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     const now = new Date();
-  //     const diffInMinutes = (taskData.targetDate - now) / 1000 / 60;
-  //     if (diffInMinutes <= 10) {
-  //       clearInterval(intervalId);
-  //     }
-  //   }, 1000);
-  //   return () => clearInterval(intervalId);
-  // }, []);
-
   useEffect(() => {
     const date1 = new Date(taskData.targetDate);
     const date2 = new Date();
     const diff = date1 - date2;
     let msec = diff;
-    const hh = Math.floor(msec / 1000 / 60 / 60);
+    // const hh = Math.floor(msec / 1000 / 60 / 60);
     const mm = Math.floor(msec / 1000 / 60);
     msec -= mm * 1000 * 60;
     const ss = Math.floor(msec / 1000);
@@ -161,18 +128,12 @@ const Task = ({ taskData, index }) => {
         }}
         style={styles.outline}
       >
-        {/* <Text>タスク{index + 1}</Text> */}
         <View style={styles.container}>
           <Text>Task:{taskText}</Text>
           <Text>
             {result} {result2}
           </Text>
         </View>
-        {/* <Text>目標：{goalText}</Text> */}
-        {/* <Text>日付：{date}</Text>
-        <Text>時間：{time}</Text> */}
-        {/* <Text>工数：{selectedManHour}</Text> */}
-        {/* <Text>ステータス：{selectedStatus}</Text> */}
       </TouchableOpacity>
       <Modal
         animationType="slide"
@@ -282,14 +243,6 @@ const Task = ({ taskData, index }) => {
                 }}
               ></Button>
             </View>
-            {/* <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-              }}
-            >
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable> */}
           </View>
         </View>
       </Modal>
@@ -334,9 +287,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    // margin: 20,
     backgroundColor: "white",
-    // borderRadius: 20,
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",

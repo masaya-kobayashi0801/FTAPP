@@ -1,4 +1,3 @@
-// import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 
 import React, { useEffect, useState } from "react";
@@ -10,45 +9,23 @@ import {
   Pressable,
   TextInput,
   SafeAreaView,
-  Button,
 } from "react-native";
 import { StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import Countdown from "react-countdown";
 import { Picker } from "@react-native-picker/picker";
 import {
   child,
   getDatabase,
   ref,
-  set,
   push,
   update,
   onValue,
 } from "firebase/database";
 import Task from "../components/Task";
-import { useCallback } from "react";
 
-// function writeUserData(userId, name, email) {
-//   const db = getDatabase();
-//   set(ref(db, "users/" + userId), {
-//     username: name,
-//     email: email,
-//   });
-// }
-
-// writeUserData(1, "Masaya", "test@test.co.jp");
 const HomeScreen = () => {
-  // const handleLogout = () => {
-  //   signOut(auth)
-  //     .then(() => {
-  //     })
-  //     .catch((error) => {
-  //     });
-  // };
-
   const db = getDatabase();
-
   const [modalVisible, setMedalVisible] = useState(false);
   const [taskText, onChangeTaskText] = useState("");
   const [goalText, onChangeGoalText] = useState("");
@@ -57,16 +34,12 @@ const HomeScreen = () => {
   const [mode, setMode] = useState("date");
   const [selectedManHour, setSelectedManHour] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [triggerAlert, setTriggerAlert] = useState(true);
-  // const [dateShow, setDateShow] = useState(false);
-  // const [timeShow, setTimeShow] = useState(false);]
   const [taskId, setTaskId] = useState("");
   const [fetchData, setFetchData] = useState(null);
-  const onChange = (event, selectedDate) => {
+  const onChange = (selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);
     setDate(currentDate);
-    const isoString = currentDate.toISOString();
   };
 
   const showMode = (currentMode) => {
@@ -95,30 +68,9 @@ const HomeScreen = () => {
     }
   };
 
-  const renderer = ({ hours, minutes, seconds }) => {
-    return (
-      <Text>{/* {hours} hours, {minutes} minutes, {seconds} seconds */}</Text>
-    );
-  };
-
-  const handleInterval = useCallback(({ hours, minutes, seconds }) => {
-    console.log(111);
-    if (minutes < 15 && triggerAlert) {
-      alert("15分以内です");
-      setTriggerAlert(false);
-    }
-    if (hours === 0 && minutes === 0 && seconds === 1) {
-      alert("差分0になりました");
-    }
-  }, []);
-  const handleComplete = () => {
-    // setEnabled(false);
-  };
-
   useEffect(() => {
     const user = auth.currentUser;
     const userId = user.uid;
-    // const newTaskKey = push(child(ref(db), "tasks")).key;
     const dbRef = ref(db, `users/${userId}/tasks/${taskId}`);
     const unsubscribe = onValue(dbRef, (snapshot) => {
       const data = snapshot.val();
@@ -129,19 +81,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Text>ホーム画面</Text>
-      <TouchableOpacity
-        onPress={handleLogout}
-        style={{
-          marginTop: 10,
-          padding: 10,
-          backgroundColor: "#2196F3",
-          borderRadius: 10,
-          width: 100,
-        }}
-      >
-        <Text style={{ color: "white" }}>ログアウト</Text>
-      </TouchableOpacity> */}
       <Text style={{ textAlign: "center" }}>
         ここにタスクデータを表示するよ
       </Text>
@@ -150,13 +89,6 @@ const HomeScreen = () => {
           Object.keys(fetchData).map((key) => (
             <React.Fragment key={key}>
               <Task taskData={fetchData[key]} index={key} />
-              {/* <Countdown
-                date={fetchData[key].targetDate}
-                intervalDelay={1000} // 1秒ごとにコールバック関数を実行する
-                renderer={renderer} // 残りの時間を表示する関数
-                onTick={handleInterval} // インターバル毎に実行する関数
-                onComplete={handleComplete} // タイマー終了時に実行する関数
-              /> */}
             </React.Fragment>
           ))}
       </View>
@@ -166,7 +98,6 @@ const HomeScreen = () => {
           setMedalVisible(true);
         }}
       >
-        {/* <Text style={styles.addButtonText}>タスク追加</Text> */}
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
       <Modal
@@ -212,19 +143,6 @@ const HomeScreen = () => {
                     style={styles.dateText}
                   >{`${date.toLocaleTimeString()}`}</Text>
                 </TouchableOpacity>
-                {/* <Button
-                  onPress={() => showMode("time")}
-                  title={`${date.toLocaleTimeString()}`}
-                /> */}
-                {/* <Text>Selected Date: {date.toDateString()}</Text> */}
-                {/* <Text>Selected Time: {date.toLocaleTimeString()}</Text> */}
-                {/* <Countdown
-                  date={date}
-                  intervalDelay={1000} // 1秒ごとにコールバック関数を実行する
-                  renderer={renderer} // 残りの時間を表示する関数
-                  onTick={handleInterval} // インターバル毎に実行する関数
-                  onComplete={handleComplete} // タイマー終了時に実行する関数
-                /> */}
                 {show && (
                   <DateTimePicker
                     value={date}
@@ -261,24 +179,9 @@ const HomeScreen = () => {
                   style={styles.picker}
                 >
                   <Picker.Item label="To Do" value="To Do" />
-                  {/* <Picker.Item label="In Progress" value="In Progress" />
-                  <Picker.Item label="resolved" value="resolved" /> */}
                 </Picker>
               </View>
             </SafeAreaView>
-            {/* <Button
-              title="Submit"
-              onPress={() => {
-                writeTaskPost();
-                setMedalVisible(false);
-                onChangeTaskText("");
-                onChangeGoalText("");
-                setSelectedManHour("0.5");
-                setSelectedStatus("未着手");
-                setDate(new Date());
-              }}
-              style={styles.button}
-            ></Button> */}
              <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
@@ -334,9 +237,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    // margin: 20,
     backgroundColor: "white",
-    // borderRadius: 20,
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
@@ -349,7 +250,6 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonWrap: {
-    // flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
   },
