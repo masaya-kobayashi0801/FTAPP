@@ -7,7 +7,6 @@ import {
   SafeAreaView,
   TextInput,
   Button,
-  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
@@ -25,7 +24,6 @@ const Task = ({ taskData, index }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [taskText, onChangeTaskText] = useState(taskData.task);
   const [goalText, onChangeGoalText] = useState(taskData.goal);
-  // const [date, setDate] = useState(taskData.date);
   const [valueDate, setValueData] = useState(new Date());
   const [date, setDate] = useState(taskData.date);
   const [time, setTime] = useState(taskData.time);
@@ -33,7 +31,6 @@ const Task = ({ taskData, index }) => {
   const [show, setShow] = useState(false);
   const [selectedManHour, setSelectedManHour] = useState(taskData.manHour);
   const [selectedStatus, setSelectedStatus] = useState(taskData.status);
-  // const [taskId, setTaskId] = useState("");
   const [enabled, setEnabled] = useState(false);
   const [triggerAlert, setTriggerAlert] = useState(true);
 
@@ -45,17 +42,12 @@ const Task = ({ taskData, index }) => {
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || valueDate;
-    // const currentDate = selectedDate || time;
     const str = currentDate.toLocaleString("ja-JP", { hour12: false });
-    console.log("003" + str);
-    const dateOnly = str.slice(0, 10);
     const timeOnly = str.slice(-8);
     const currentDateString = currentDate.toDateString();
     const currentTimeString = timeOnly;
-    console.log(currentTimeString);
     setShow(false);
     setValueData(currentDate);
-    // console.log("dbg003" + valueDate);
     mode === "date" ? setDate(currentDateString) : setTime(currentTimeString);
   };
 
@@ -68,7 +60,6 @@ const Task = ({ taskData, index }) => {
     const obj = new Date(date);
     const str = JSON.stringify(obj);
     const arr = str.split("T");
-    const datePart = arr[0];
     const timePart = arr[1];
     const newTime = `${time}.000Z`;
     const newStr = str.replace(timePart, newTime);
@@ -115,40 +106,12 @@ const Task = ({ taskData, index }) => {
     setEnabled(false);
   };
 
-  // // Set the two dates
-  // let date1 = new Date("2023-08-03T20:31:58+09:00");
-  // let date2 = new Date();
-
-  // // Calculate the difference in milliseconds
-  // let differenceInTime = date2.getTime() - date1.getTime();
-
-  // // Calculate the difference in minutes
-  // let differenceInMinutes = differenceInTime / (1000 * 60);
-
-  //   `The difference between ${date1} and ${date2} is ${differenceInMinutes} minutes.`
-  // );
-  // const now = new Date();
-  // const differenceInTime = now.getTime() - valueDate.getTime() ;
-  // const differenceInMinutes = differenceInTime / (1000 * 60);
-  //   `The difference between ${valueDate} and ${now} is ${differenceInMinutes} minutes.`
-  // );
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     const now = new Date();
-  //     const diffInMinutes = (taskData.targetDate - now) / 1000 / 60;
-  //     if (diffInMinutes <= 10) {
-  //       clearInterval(intervalId);
-  //     }
-  //   }, 1000);
-  //   return () => clearInterval(intervalId);
-  // }, []);
-
   useEffect(() => {
     const date1 = new Date(taskData.targetDate);
     const date2 = new Date();
     const diff = date1 - date2;
     let msec = diff;
-    const hh = Math.floor(msec / 1000 / 60 / 60);
+    // const hh = Math.floor(msec / 1000 / 60 / 60);
     const mm = Math.floor(msec / 1000 / 60);
     msec -= mm * 1000 * 60;
     const ss = Math.floor(msec / 1000);
@@ -165,31 +128,24 @@ const Task = ({ taskData, index }) => {
         }}
         style={styles.outline}
       >
-        {/* <Text>タスク{index + 1}</Text> */}
         <View style={styles.container}>
           <Text>Task:{taskText}</Text>
           <Text>
             {result} {result2}
           </Text>
         </View>
-        {/* <Text>目標：{goalText}</Text> */}
-        {/* <Text>日付：{date}</Text>
-        <Text>時間：{time}</Text> */}
-        {/* <Text>工数：{selectedManHour}</Text> */}
-        {/* <Text>ステータス：{selectedStatus}</Text> */}
       </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          alert("Modal has been closed.");
           setModalVisible(!modalVisible);
         }}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>タスク詳細</Text>
+            <Text style={styles.modalText}>Task</Text>
             <SafeAreaView>
               <TextInput
                 style={styles.input}
@@ -203,17 +159,19 @@ const Task = ({ taskData, index }) => {
                 value={goalText}
                 placeholder="Goal"
               />
-              <View>
-                <Button
+              <View style={styles.buttonWrap}>
+                <TouchableOpacity
                   onPress={() => showMode("date")}
-                  title="Show Date Picker"
-                />
-                <Button
+                  style={styles.dateButtonStyle}
+                >
+                  <Text style={styles.dateText}>{date}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => showMode("time")}
-                  title="Show Time Picker"
-                />
-                <Text>Selected Date: {date}</Text>
-                <Text>Selected Time: {time}</Text>
+                  style={styles.timeButtonStyle}
+                >
+                  <Text style={styles.dateText}>{time}</Text>
+                </TouchableOpacity>
                 {show && (
                   <DateTimePicker
                     value={valueDate}
@@ -224,7 +182,7 @@ const Task = ({ taskData, index }) => {
                 )}
               </View>
               <View style={styles.pickerContainer}>
-                <Text>工数</Text>
+                <Text>Man hour</Text>
                 <Picker
                   selectedValue={selectedManHour}
                   onValueChange={(itemValue) => {
@@ -241,7 +199,7 @@ const Task = ({ taskData, index }) => {
                 </Picker>
               </View>
               <View style={styles.pickerContainer}>
-                <Text>ステータス</Text>
+                <Text>Status</Text>
                 <Picker
                   selectedValue={selectedStatus}
                   onValueChange={(itemValue) => {
@@ -250,7 +208,7 @@ const Task = ({ taskData, index }) => {
                   style={styles.picker}
                   enabled={enabled}
                 >
-                  <Picker.Item label="未着手" value="未着手" />
+                  <Picker.Item label="To Do" value="To Do" />
                   <Picker.Item label="In Progress" value="In Progress" />
                   <Picker.Item label="resolved" value="resolved" />
                 </Picker>
@@ -271,28 +229,20 @@ const Task = ({ taskData, index }) => {
               }}
             >
               <Button
-                title="更新"
+                title="Update"
                 onPress={() => {
                   writeTaskUpdate();
                   setModalVisible(false);
                 }}
               ></Button>
               <Button
-                title="削除"
+                title="Delete"
                 onPress={() => {
                   writeTaskDelete();
                   setModalVisible(false);
                 }}
               ></Button>
             </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-              }}
-            >
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
           </View>
         </View>
       </Modal>
@@ -337,9 +287,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    // margin: 20,
     backgroundColor: "white",
-    // borderRadius: 20,
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
@@ -373,16 +321,47 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input: {
-    height: 40,
-    width: 250,
-    margin: 12,
+    borderColor: "#707070",
+    borderStyle: "solid",
+    backgroundColor: "#FFFFFF",
+    height: 46,
+    margin: 10,
     borderWidth: 1,
     padding: 10,
+    borderRadius: 5,
+  },
+  buttonWrap: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  dateButtonStyle: {
+    borderColor: "#707070",
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: "#fff",
+    height: 46,
+    padding: 10,
+    margin: 10,
+    width: "55%",
+  },
+  timeButtonStyle: {
+    borderColor: "#707070",
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: "#fff",
+    height: 46,
+    padding: 10,
+    margin: 10,
+    width: "35%",
+  },
+  dateText: {
+    color: "#707070",
   },
   pickerContainer: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    margin: 10,
   },
   picker: {
     height: 50,
