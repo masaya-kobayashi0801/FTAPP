@@ -42,10 +42,8 @@ const Task = ({ taskData, index }) => {
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || valueDate;
-    const str = currentDate.toLocaleString("ja-JP", { hour12: false });
-    const timeOnly = str.slice(-8);
     const currentDateString = currentDate.toDateString();
-    const currentTimeString = timeOnly;
+    const currentTimeString = currentDate.toLocaleTimeString();
     setShow(false);
     setValueData(currentDate);
     mode === "date" ? setDate(currentDateString) : setTime(currentTimeString);

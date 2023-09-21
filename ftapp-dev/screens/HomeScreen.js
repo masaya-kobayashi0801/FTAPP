@@ -36,7 +36,7 @@ const HomeScreen = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [taskId, setTaskId] = useState("");
   const [fetchData, setFetchData] = useState(null);
-  const onChange = (selectedDate) => {
+  const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);
     setDate(currentDate);
