@@ -7,11 +7,11 @@ import {
   SafeAreaView,
   TextInput,
   Button,
+  Alert,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import Countdown from "react-countdown";
 // firebase
 import { auth } from "../firebase";
 import { child, getDatabase, ref, update, remove } from "firebase/database";
@@ -24,7 +24,6 @@ const Task = ({ taskData, index }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [taskText, onChangeTaskText] = useState(taskData.task);
   const [goalText, onChangeGoalText] = useState(taskData.goal);
-  const [valueDate, setValueData] = useState(new Date());
   const [date, setDate] = useState(taskData.date);
   const [time, setTime] = useState(taskData.time);
   const [mode, setMode] = useState("date");
@@ -32,18 +31,25 @@ const Task = ({ taskData, index }) => {
   const [selectedManHour, setSelectedManHour] = useState(taskData.manHour);
   const [selectedStatus, setSelectedStatus] = useState(taskData.status);
   const [enabled, setEnabled] = useState(false);
-  const [triggerAlert, setTriggerAlert] = useState(true);
+
+  const taskTime = new Date(date + " " + time);
+
+  const [valueDate, setValueData] = useState(taskTime);
+
+  //useRef
+  const alertShownRef = useRef(false);
 
   let dateParts = date.split(" ");
   let result = dateParts[1] + " " + dateParts[2];
   let timeParts = time.split(":");
-  let result2 =
-    timeParts[0] + ":" + timeParts[1] + " " + timeParts[2].split(" ")[1];
+  let result2 = " " + timeParts[0] + ":" + timeParts[1];
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || valueDate;
     const currentDateString = currentDate.toDateString();
-    const currentTimeString = currentDate.toLocaleTimeString();
+    const currentTimeString = currentDate.toLocaleTimeString("ja-JP", {
+      hour12: false,
+    });
     setShow(false);
     setValueData(currentDate);
     mode === "date" ? setDate(currentDateString) : setTime(currentTimeString);
@@ -80,43 +86,29 @@ const Task = ({ taskData, index }) => {
       .catch((error) => {});
   };
 
-  const renderer = ({ hours, minutes, seconds }) => {
-    return (
-      <Text>{/* {hours} hours, {minutes} minutes, {seconds} seconds */}</Text>
-    );
-  };
-
-  const handleInterval = ({ hours, minutes, seconds }) => {
-    console.log(hours);
-    console.log(minutes);
-    console.log(seconds);
-    if (minutes < 15 && triggerAlert) {
-      setEnabled(true);
-      alert("15分以内です");
-      setTriggerAlert(false);
-    }
-    if (hours === 0 && minutes === 0 && seconds === 1) {
-      alert("差分0になりました");
-    }
-  };
-
-  const handleComplete = () => {
-    setEnabled(false);
-  };
-
   useEffect(() => {
-    const date1 = new Date(taskData.targetDate);
-    const date2 = new Date();
-    const diff = date1 - date2;
-    let msec = diff;
-    // const hh = Math.floor(msec / 1000 / 60 / 60);
-    const mm = Math.floor(msec / 1000 / 60);
-    msec -= mm * 1000 * 60;
-    const ss = Math.floor(msec / 1000);
-    msec -= ss * 1000;
-    if (mm < 15) {
-      setEnabled(true);
-    }
+    const intervalId = setInterval(() => {
+      const now = new Date();
+      const diff = taskTime - now;
+
+      if (diff > 0) {
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        console.log(`${hours} hours, ${minutes} minutes, ${seconds} seconds`);
+        if (hours === 0 && minutes <= 15 && !alertShownRef.current) {
+          Alert.alert("15分以内になりました！");
+          alertShownRef.current = true;
+        }
+      } else {
+        clearInterval(intervalId);
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+      alertShownRef.current = false;
+    };
   }, []);
   return (
     <View>
@@ -129,7 +121,8 @@ const Task = ({ taskData, index }) => {
         <View style={styles.container}>
           <Text>Task:{taskText}</Text>
           <Text>
-            {result} {result2}
+            {result}
+            {result2}
           </Text>
         </View>
       </TouchableOpacity>
@@ -212,13 +205,6 @@ const Task = ({ taskData, index }) => {
                 </Picker>
               </View>
             </SafeAreaView>
-            <Countdown
-              date={taskData.targetDate}
-              intervalDelay={1000} // 1秒ごとにコールバック関数を実行する
-              renderer={renderer} // 残りの時間を表示する関数
-              onTick={handleInterval} // インターバル毎に実行する関数
-              onComplete={handleComplete} // タイマー終了時に実行する関数
-            />
             <View
               style={{
                 flexDirection: "row",

@@ -55,7 +55,7 @@ const HomeScreen = () => {
         task: taskText,
         goal: goalText,
         date: date.toDateString(),
-        time: date.toLocaleTimeString(),
+        time: date.toLocaleTimeString('ja-JP', { hour12: false }),
         manHour: selectedManHour,
         status: selectedStatus,
         targetDate: date,
@@ -141,7 +141,7 @@ const HomeScreen = () => {
                 >
                   <Text
                     style={styles.dateText}
-                  >{`${date.toLocaleTimeString()}`}</Text>
+                  >{`${date.toLocaleTimeString('ja-JP', { hour12: false })}`}</Text>
                 </TouchableOpacity>
                 {show && (
                   <DateTimePicker
