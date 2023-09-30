@@ -13,8 +13,11 @@ import React, { useRef, useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 // firebase
-import { auth } from "../firebase";
+import { auth, createPaymentIntent } from "../firebase";
 import { child, getDatabase, ref, update, remove } from "firebase/database";
+// stripe
+import { useStripe } from "@stripe/stripe-react-native";
+import { STRIPE_PUBLISHABLE_KEY } from "@env";
 
 const Task = ({ taskData, index }) => {
   // firebase
@@ -31,6 +34,10 @@ const Task = ({ taskData, index }) => {
   const [selectedManHour, setSelectedManHour] = useState(taskData.manHour);
   const [selectedStatus, setSelectedStatus] = useState(taskData.status);
   const [enabled, setEnabled] = useState(false);
+
+  // useStripe
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const [clientSecret, setClientSecret] = useState();
 
   const taskTime = new Date(date + " " + time);
 
@@ -86,6 +93,43 @@ const Task = ({ taskData, index }) => {
       .catch((error) => {});
   };
 
+  const fetchClientSecret = async () => {
+    try {
+      const response = await createPaymentIntent({
+        amount: 10000,
+        currency: "usd",
+      });
+
+      const clientSecret = response.data.clientSecret;
+      setClientSecret(clientSecret);
+    } catch (error) {
+      console.error("dbg001" + error);
+    }
+  };
+
+  const handlePay = async () => {
+    const { error } = await initPaymentSheet({
+      paymentIntentClientSecret: clientSecret, // paymentIntentのクライアントシークレットキー。これは支払いの確認と認証に使用
+      merchantDisplayName: "FTAPP", // : 支払いプロセス中に表示される商店名または表示名。ユーザーに表示される情報
+      publishableKey: STRIPE_PUBLISHABLE_KEY,
+    });
+    console.log("dbg002" + JSON.stringify(error));
+    if (!error) {
+      const result = await presentPaymentSheet({ clientSecret });
+      if (result.error) {
+        console.log("Error:", result.error);
+      } else {
+        console.log("Success:", result);
+      }
+    }
+  };
+
+  // useEffect
+
+  useEffect(() => {
+    fetchClientSecret();
+  }, []);
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       const now = new Date();
@@ -97,9 +141,17 @@ const Task = ({ taskData, index }) => {
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         console.log(`${hours} hours, ${minutes} minutes, ${seconds} seconds`);
         if (hours === 0 && minutes <= 15 && !alertShownRef.current) {
-          Alert.alert("15分以内になりました！");
+          // Alert.alert("15分以内になりました！");
           setEnabled(true);
           alertShownRef.current = true;
+        }
+        if (hours === 0 && minutes === 0 && seconds === 1) {
+          if (selectedStatus === "To Do") {
+            // Alert.alert("status変更されていないので、罰金です");
+            handlePay();
+            console.log("status変更されていないので、罰金です");
+          }
+          setEnabled(false);
         }
       } else {
         clearInterval(intervalId);
@@ -110,7 +162,8 @@ const Task = ({ taskData, index }) => {
       clearInterval(intervalId);
       alertShownRef.current = false;
     };
-  }, []);
+  }, [selectedStatus]);
+
   return (
     <View>
       <TouchableOpacity
