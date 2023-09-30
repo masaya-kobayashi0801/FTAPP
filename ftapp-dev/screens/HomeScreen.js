@@ -105,7 +105,6 @@ const HomeScreen = () => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          alert("Modal has been closed.");
           setMedalVisible(!modalVisible);
         }}
       >

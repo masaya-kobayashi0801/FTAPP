@@ -98,6 +98,7 @@ const Task = ({ taskData, index }) => {
         console.log(`${hours} hours, ${minutes} minutes, ${seconds} seconds`);
         if (hours === 0 && minutes <= 15 && !alertShownRef.current) {
           Alert.alert("15分以内になりました！");
+          setEnabled(true);
           alertShownRef.current = true;
         }
       } else {
