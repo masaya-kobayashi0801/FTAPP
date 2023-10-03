@@ -7,7 +7,6 @@ import {
   SafeAreaView,
   TextInput,
   Button,
-  Alert,
 } from "react-native";
 import React, { useRef, useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
@@ -19,7 +18,7 @@ import { child, getDatabase, ref, update, remove } from "firebase/database";
 import { useStripe } from "@stripe/stripe-react-native";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 
-const Task = ({ taskData, index }) => {
+const Task = ({ taskData, index, clientKey }) => {
   // firebase
   const db = getDatabase();
   const userId = auth.currentUser.uid;
@@ -108,19 +107,25 @@ const Task = ({ taskData, index }) => {
   };
 
   const handlePay = async () => {
-    const { error } = await initPaymentSheet({
-      paymentIntentClientSecret: clientSecret, // paymentIntentのクライアントシークレットキー。これは支払いの確認と認証に使用
-      merchantDisplayName: "FTAPP", // : 支払いプロセス中に表示される商店名または表示名。ユーザーに表示される情報
-      publishableKey: STRIPE_PUBLISHABLE_KEY,
-    });
-    console.log("dbg002" + JSON.stringify(error));
-    if (!error) {
-      const result = await presentPaymentSheet({ clientSecret });
-      if (result.error) {
-        console.log("Error:", result.error);
+    try {
+      const { error } = await initPaymentSheet({
+        paymentIntentClientSecret: clientKey, // paymentIntentのクライアントシークレットキー。これは支払いの確認と認証に使用
+        merchantDisplayName: "FTAPP", // : 支払いプロセス中に表示される商店名または表示名。ユーザーに表示される情報
+        publishableKey: STRIPE_PUBLISHABLE_KEY,
+      });
+      console.log("dbg002" + JSON.stringify(error));
+      if (!error) {
+        const result = await presentPaymentSheet({ clientSecret });
+        if (result.error) {
+          console.log("Error:", result.error);
+        } else {
+          console.log("Success:", result);
+        }
       } else {
-        console.log("Success:", result);
+        console.log("initPaymentSheetでエラーが発生しました", error);
       }
+    } catch (err) {
+      console.error("エラーが発生しました", err);
     }
   };
 
@@ -147,7 +152,6 @@ const Task = ({ taskData, index }) => {
         }
         if (hours === 0 && minutes === 0 && seconds === 1) {
           if (selectedStatus === "To Do") {
-            // Alert.alert("status変更されていないので、罰金です");
             handlePay();
             console.log("status変更されていないので、罰金です");
           }

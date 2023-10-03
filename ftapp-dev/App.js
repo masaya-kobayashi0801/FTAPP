@@ -11,7 +11,8 @@ import CreditScreen from "./screens/CreditScreen";
 import { auth } from "./firebase";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
-// import { StripeProvider } from "@stripe/stripe-react-native";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import { STRIPE_PUBLISHABLE_KEY } from "@env";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -45,7 +46,7 @@ export default function App() {
     );
   } else {
     return (
-      // <StripeProvider publishableKey="pk_test_51NLmv2L6bJX7Rc74BmprifyOxugWuyUSiRVhMnV5GgJ9c6Df8aWASAP5fjcsMAhFxmax2jdsEp7xPEQ5YiDnjnhK00ldQfphTf">
+      <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
         <NavigationContainer>
           <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -79,7 +80,8 @@ export default function App() {
             )}
           </Tab.Navigator>
         </NavigationContainer>
-      // </StripeProvider>
+        {/* //{" "} */}
+      </StripeProvider>
     );
   }
 }

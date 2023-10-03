@@ -1,4 +1,4 @@
-import { auth } from "../firebase";
+import { auth, createPaymentIntent } from "../firebase";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -36,6 +36,7 @@ const HomeScreen = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [taskId, setTaskId] = useState("");
   const [fetchData, setFetchData] = useState(null);
+  const [clientSecret, setClientSecret] = useState();
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);
@@ -55,7 +56,7 @@ const HomeScreen = () => {
         task: taskText,
         goal: goalText,
         date: date.toDateString(),
-        time: date.toLocaleTimeString('ja-JP', { hour12: false }),
+        time: date.toLocaleTimeString("ja-JP", { hour12: false }),
         manHour: selectedManHour,
         status: selectedStatus,
         targetDate: date,
@@ -68,6 +69,24 @@ const HomeScreen = () => {
     }
   };
 
+  const fetchClientSecret = async () => {
+    try {
+      const response = await createPaymentIntent({
+        amount: 10000,
+        currency: "usd",
+      });
+
+      const clientSecret = response.data.clientSecret;
+      setClientSecret(clientSecret);
+    } catch (error) {
+      console.error("dbg001" + error);
+    }
+  };
+
+  useEffect(() => {
+    fetchClientSecret();
+  }, []);
+
   useEffect(() => {
     const user = auth.currentUser;
     const userId = user.uid;
@@ -79,6 +98,8 @@ const HomeScreen = () => {
     return () => unsubscribe();
   }, []);
 
+  console.log("102" + clientSecret);
+
   return (
     <View style={styles.container}>
       <Text style={{ textAlign: "center" }}>
@@ -88,7 +109,11 @@ const HomeScreen = () => {
         {fetchData &&
           Object.keys(fetchData).map((key) => (
             <React.Fragment key={key}>
-              <Task taskData={fetchData[key]} index={key} />
+              <Task
+                taskData={fetchData[key]}
+                clientKey={clientSecret}
+                index={key}
+              />
             </React.Fragment>
           ))}
       </View>
@@ -138,9 +163,10 @@ const HomeScreen = () => {
                   onPress={() => showMode("time")}
                   style={styles.timeButtonStyle}
                 >
-                  <Text
-                    style={styles.dateText}
-                  >{`${date.toLocaleTimeString('ja-JP', { hour12: false })}`}</Text>
+                  <Text style={styles.dateText}>{`${date.toLocaleTimeString(
+                    "ja-JP",
+                    { hour12: false }
+                  )}`}</Text>
                 </TouchableOpacity>
                 {show && (
                   <DateTimePicker
@@ -181,7 +207,7 @@ const HomeScreen = () => {
                 </Picker>
               </View>
             </SafeAreaView>
-             <Pressable
+            <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
                 writeTaskPost();
