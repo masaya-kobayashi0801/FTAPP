@@ -11,7 +11,8 @@ import {
   SafeAreaView,
 } from "react-native";
 import { StyleSheet } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+// import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import {
@@ -97,8 +98,6 @@ const HomeScreen = () => {
     });
     return () => unsubscribe();
   }, []);
-
-  console.log("102" + clientSecret);
 
   return (
     <View style={styles.container}>

@@ -113,7 +113,6 @@ const Task = ({ taskData, index, clientKey }) => {
         merchantDisplayName: "FTAPP", // : 支払いプロセス中に表示される商店名または表示名。ユーザーに表示される情報
         publishableKey: STRIPE_PUBLISHABLE_KEY,
       });
-      console.log("dbg002" + JSON.stringify(error));
       if (!error) {
         const result = await presentPaymentSheet({ clientSecret });
         if (result.error) {
