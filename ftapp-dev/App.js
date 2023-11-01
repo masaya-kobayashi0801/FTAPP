@@ -10,40 +10,41 @@ import TimerScreen from "./screens/TimerScreen";
 import CreditScreen from "./screens/CreditScreen";
 import { auth } from "./firebase";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Ionicons from "react-native-vector-icons/Ionicons";
+// import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from "@expo/vector-icons";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
+import * as Font from "expo-font";
+import AppLoading from "expo-app-loading";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+async function loadFonts() {
+  await Font.loadAsync({
+    ...Ionicons.font,
+  });
+}
+
 export default function App() {
   const [user, setUser] = useState("");
   const [loading, setLoading] = useState(true);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setLoading(false);
       if (user) {
-        console.log(user);
         setUser(user);
       } else {
         setUser("");
       }
     });
+    loadFonts().then(() => setFontsLoaded(true));
     return () => unsubscribe();
   }, []);
-  if (loading) {
-    return (
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          flex: 1,
-        }}
-      >
-        <Text>Loading...</Text>
-      </View>
-    );
+  if (!fontsLoaded || loading) {
+    return <AppLoading />;
   } else {
     return (
       <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
