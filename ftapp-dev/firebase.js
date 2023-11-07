@@ -4,6 +4,8 @@ import { initializeApp } from "firebase/app";
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
+//getFunctions　firebaseプロジェクト内のcloud functionsを取得するために使用
+//httpsCallable　Firebase Cloud FuonctionsのHTTPエンドポイントを呼び出す
 import { getFunctions, httpsCallable } from "firebase/functions";
 
 // Your web app's Firebase configuration
@@ -23,4 +25,5 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const database = getDatabase(app);
 export const functions = getFunctions(app);
+// エンドポイント
 export const createPaymentIntent = httpsCallable(functions, 'createPaymentIntent');

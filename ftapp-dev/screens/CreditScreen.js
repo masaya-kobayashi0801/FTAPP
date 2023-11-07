@@ -1,56 +1,71 @@
+import React, { useState } from "react";
+import { View, Button, Text } from "react-native";
 import {
   StripeProvider,
   CardField,
   useStripe,
 } from "@stripe/stripe-react-native";
-import { useEffect, useState } from "react";
-import { Button } from "react-native";
 import { createPaymentIntent } from "../firebase";
 
 const CreditScreen = () => {
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
-  const [clientSecret, setClientSecret] = useState();
+  const { handleCardAction } = useStripe();
+  const [clientSecret, setClientSecret] = useState("");
+  const [paymentResult, setPaymentResult] = useState("");
+  const [cardDetails, setCardDetails] = useState({});
 
-  useEffect(() => {
-    fetchClientSecret();
-  }, []);
+  const handleCardFieldChange = (event) => {
+    if (event.complete) {
+      setCardDetails(event.values);
+    }
+  };
 
-  const fetchClientSecret = async () => {
+  const handleRegisterCard = async () => {
     try {
       const response = await createPaymentIntent({
         amount: 1000,
         currency: "usd",
       });
-      console.log(response);
-
-      const clientSecret  = response.data.clientSecret;
+      const clientSecret = response.data.clientSecret;
       setClientSecret(clientSecret);
+      console.log("Card registered successfully!");
     } catch (error) {
-      console.error(error);
+      console.error("Error registering card:", error);
     }
   };
-
 
   const handlePayPress = async () => {
-    const { error } = await initPaymentSheet({
-      paymentIntentClientSecret: clientSecret,
-      merchantDisplayName:'FTAPP'
-    });
-    console.log("dbg001" + JSON.stringify(error));
-    // 支払いシートの初期化が成功した場合
-    if (!error) {
-      const result = await presentPaymentSheet({ clientSecret });
-      if (result.error) {
-        console.log("Error:", result.error);
+    try {
+      await handleRegisterCard(); // クレジット情報を登録
+      const { error } = await handleCardAction(clientSecret, cardDetails);
+      if (error) {
+        console.error("Error processing payment:", error);
+        setPaymentResult("Payment failed");
       } else {
-        console.log("Success:", result);
+        console.log("Payment successful!");
+        setPaymentResult("Payment successful!");
       }
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      setPaymentResult("Payment failed");
     }
   };
+
   return (
-    <StripeProvider publishableKey="pk_test_51NLmv2L6bJX7Rc74BmprifyOxugWuyUSiRVhMnV5GgJ9c6Df8aWASAP5fjcsMAhFxmax2jdsEp7xPEQ5YiDnjnhK00ldQfphTf">
-      <CardField postalCodeEnabled={false} />
-      <Button title="Pay" onPress={handlePayPress} />
+    <StripeProvider publishableKey="">
+      <View>
+        <CardField
+          postalCodeEnabled={false}
+          placeholder={{
+            number: "1234 5678 9012 3456",
+            expiration: "MM/YY",
+            cvc: "CVC",
+          }}
+          onCardChange={handleCardFieldChange}
+        />
+        <Button title="Register Card" onPress={handleRegisterCard} />
+        <Button title="Pay" onPress={handlePayPress} />
+        <Text>{paymentResult}</Text>
+      </View>
     </StripeProvider>
   );
 };
