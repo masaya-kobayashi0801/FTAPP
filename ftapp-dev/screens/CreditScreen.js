@@ -6,18 +6,13 @@ import {
   useStripe,
 } from "@stripe/stripe-react-native";
 import { createPaymentIntent } from "../firebase";
+import { STRIPE_PUBLISHABLE_KEY } from "@env";
 
 const CreditScreen = () => {
-  const { handleCardAction } = useStripe();
+  const { handleCardAction, createToken } = useStripe(); // createTokenを追加
   const [clientSecret, setClientSecret] = useState("");
   const [paymentResult, setPaymentResult] = useState("");
   const [cardDetails, setCardDetails] = useState({});
-
-  const handleCardFieldChange = (event) => {
-    if (event.complete) {
-      setCardDetails(event.values);
-    }
-  };
 
   const handleRegisterCard = async () => {
     try {
@@ -35,14 +30,29 @@ const CreditScreen = () => {
 
   const handlePayPress = async () => {
     try {
-      await handleRegisterCard(); // クレジット情報を登録
-      const { error } = await handleCardAction(clientSecret, cardDetails);
-      if (error) {
-        console.error("Error processing payment:", error);
+      const { token, error: errorToken } = await createToken({
+        type: "card",
+        card: cardDetails
+        // {
+        //   number: "4242424242424242",
+        //   expMonth: 11,
+        //   expYear: 26,
+        //   cvc: "223",
+        //   type: 'Visa'
+        // },
+      }); // トークンを生成する
+      if (errorToken) {
+        console.error("Error creating token:", errorToken);
         setPaymentResult("Payment failed");
       } else {
-        console.log("Payment successful!");
-        setPaymentResult("Payment successful!");
+        const { error } = await handleCardAction(clientSecret, token); // トークンを渡す
+        if (error) {
+          console.error("Error processing payment:", error);
+          setPaymentResult("Payment failed");
+        } else {
+          console.log("Payment successful!");
+          setPaymentResult("Payment successful!");
+        }
       }
     } catch (error) {
       console.error("Error processing payment:", error);
@@ -51,7 +61,7 @@ const CreditScreen = () => {
   };
 
   return (
-    <StripeProvider publishableKey="">
+    <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
       <View>
         <CardField
           postalCodeEnabled={false}
@@ -60,7 +70,19 @@ const CreditScreen = () => {
             expiration: "MM/YY",
             cvc: "CVC",
           }}
-          onCardChange={handleCardFieldChange}
+          cardStyle={{
+            backgroundColor: "#FFFFFF",
+            textColor: "#000000",
+          }}
+          style={{
+            width: "100%",
+            height: 50,
+            marginVertical: 30,
+          }}
+          onCardChange={(cardDetails) => {
+            console.log("cardDetails", cardDetails);
+            setCardDetails(cardDetails);
+          }}
         />
         <Button title="Register Card" onPress={handleRegisterCard} />
         <Button title="Pay" onPress={handlePayPress} />
