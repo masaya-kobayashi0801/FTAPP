@@ -3,6 +3,7 @@ import { Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { onAuthStateChanged } from "firebase/auth";
+import { ClientSecretProvider } from "./context/ClientSecretContext";
 import RegisterScreen from "./screens/RegisterScreen";
 import HomeScreen from "./screens/HomeScreen";
 import LoginScreen from "./screens/LoginScreen";
@@ -47,6 +48,7 @@ export default function App() {
     return <AppLoading />;
   } else {
     return (
+      <ClientSecretProvider>
       <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
         <NavigationContainer>
           <Tab.Navigator
@@ -83,6 +85,7 @@ export default function App() {
         </NavigationContainer>
         {/* //{" "} */}
       </StripeProvider>
+      </ClientSecretProvider>
     );
   }
 }

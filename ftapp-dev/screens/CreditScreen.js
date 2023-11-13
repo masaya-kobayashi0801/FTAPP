@@ -7,10 +7,13 @@ import {
 } from "@stripe/stripe-react-native";
 import { createPaymentIntent } from "../firebase";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
+import { useClientSecret } from "../context/ClientSecretContext";
 
 const CreditScreen = () => {
   const stripe = useStripe();
-  const [clientSecret, setClientSecret] = useState("");
+  // const [clientSecret, setClientSecret] = useState("");
+  const {clientSecret, setClientSecret} = useClientSecret();
+  console.log(clientSecret);
   const [paymentResult, setPaymentResult] = useState("");
   const [cardDetails, setCardDetails] = useState({});
 
