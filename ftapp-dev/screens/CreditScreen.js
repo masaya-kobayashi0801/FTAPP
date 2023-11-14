@@ -8,11 +8,13 @@ import {
 import { createPaymentIntent } from "../firebase";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 import { useClientSecret } from "../context/ClientSecretContext";
+import { connect } from "react-redux";
+import { updateCardDetails } from "../actions/cardDetailsActions";
 
 const CreditScreen = () => {
   const stripe = useStripe();
   // const [clientSecret, setClientSecret] = useState("");
-  const {clientSecret, setClientSecret} = useClientSecret();
+  const { clientSecret, setClientSecret } = useClientSecret();
   console.log(clientSecret);
   const [paymentResult, setPaymentResult] = useState("");
   const [cardDetails, setCardDetails] = useState({});
@@ -33,16 +35,20 @@ const CreditScreen = () => {
 
   const handlePayPress = async () => {
     try {
-      const { paymentMethod, error: errorPaymentMethod } = await stripe.createPaymentMethod({
-        paymentMethodType: 'Card',
-        paymentMethodData: cardDetails
-      });
+      const { paymentMethod, error: errorPaymentMethod } =
+        await stripe.createPaymentMethod({
+          paymentMethodType: "Card",
+          paymentMethodData: cardDetails,
+        });
 
       if (errorPaymentMethod) {
         console.error("Error creating payment method:", errorPaymentMethod);
         setPaymentResult("Payment failed");
       } else {
-        const { error } = await stripe.confirmPayment(clientSecret, paymentMethod);
+        const { error } = await stripe.confirmPayment(
+          clientSecret,
+          paymentMethod
+        );
         if (error) {
           console.error("Error processing payment:", error);
           setPaymentResult("Payment failed");
@@ -60,28 +66,28 @@ const CreditScreen = () => {
   return (
     <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
       <View>
-      <CardField
-        postalCodeEnabled={false}
-        placeholders={{
-          number: '4242 4242 4242 4242',
-        }}
-        cardStyle={{
-          backgroundColor: '#FFFFFF',
-          textColor: '#000000',
-        }}
-        style={{
-          width: '100%',
-          height: 50,
-          marginVertical: 30,
-        }}
-        onCardChange={(cardDetails) => {
-          console.log('cardDetails', cardDetails);
-          setCardDetails(cardDetails);
-        }}
-        onFocus={(focusedField) => {
-          console.log('focusField', focusedField);
-        }}
-      />
+        <CardField
+          postalCodeEnabled={false}
+          placeholders={{
+            number: "4242 4242 4242 4242",
+          }}
+          cardStyle={{
+            backgroundColor: "#FFFFFF",
+            textColor: "#000000",
+          }}
+          style={{
+            width: "100%",
+            height: 50,
+            marginVertical: 30,
+          }}
+          onCardChange={(newCardDetails) => {
+            console.log("cardDetails", newCardDetails);
+            updateCardDetails(newCardDetails); // アクションをディスパッチしてカードの詳細を更新
+          }}
+          onFocus={(focusedField) => {
+            console.log("focusField", focusedField);
+          }}
+        />
         <Button title="Register Card" onPress={handleRegisterCard} />
         <Button title="Pay" onPress={handlePayPress} />
         <Text>{paymentResult}</Text>
@@ -90,4 +96,12 @@ const CreditScreen = () => {
   );
 };
 
-export default CreditScreen;
+const mapStateToProps = (state) => ({
+  cardDetails: state.cardDetails.cardDetails,
+});
+
+const mapDispatchToProps = {
+  updateCardDetails,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreditScreen);
