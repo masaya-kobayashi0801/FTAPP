@@ -11,6 +11,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
 import { useClientSecret } from "../context/ClientSecretContext";
 // import Ionicons from "react-native-vector-icons/Ionicons";
 import { Ionicons } from "@expo/vector-icons";
@@ -39,8 +40,8 @@ const HomeScreen = () => {
   const [taskId, setTaskId] = useState("");
   const [fetchData, setFetchData] = useState(null);
   // const [clientSecret, setClientSecret] = useState();
-  const {clientSecret} = useClientSecret();
-  console.log('Home' + clientSecret);
+  const { clientSecret } = useClientSecret();
+  const cardDetails = useSelector((state) => state.cardDetails.cardDetails);
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);

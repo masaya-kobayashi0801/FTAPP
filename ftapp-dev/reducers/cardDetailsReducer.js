@@ -3,7 +3,7 @@ const initialState = {
 };
 const cardDetailsReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "UPDATE_CARD_DETAILS":
+    case "CREATE_CARD_DETAILS":
       return {
         ...state,
         cardDetails: action.payload,

@@ -8,16 +8,15 @@ import {
 import { createPaymentIntent } from "../firebase";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 import { useClientSecret } from "../context/ClientSecretContext";
-import { connect } from "react-redux";
-import { updateCardDetails } from "../actions/cardDetailsActions";
+import { useDispatch } from "react-redux";
+import { createCardDetails } from "../actions/cardDetailsActions";
 
 const CreditScreen = () => {
   const stripe = useStripe();
-  // const [clientSecret, setClientSecret] = useState("");
   const { clientSecret, setClientSecret } = useClientSecret();
-  console.log(clientSecret);
   const [paymentResult, setPaymentResult] = useState("");
   const [cardDetails, setCardDetails] = useState({});
+  const dispatch = useDispatch();
 
   const handleRegisterCard = async () => {
     try {
@@ -27,6 +26,7 @@ const CreditScreen = () => {
       });
       const clientSecret = response.data.clientSecret;
       setClientSecret(clientSecret);
+      dispatch(createCardDetails(cardDetails));
       console.log("Card registered successfully!");
     } catch (error) {
       console.error("Error registering card:", error);
@@ -80,9 +80,8 @@ const CreditScreen = () => {
             height: 50,
             marginVertical: 30,
           }}
-          onCardChange={(newCardDetails) => {
-            console.log("cardDetails", newCardDetails);
-            updateCardDetails(newCardDetails); // アクションをディスパッチしてカードの詳細を更新
+          onCardChange={(cardDetails) => {
+            setCardDetails(cardDetails);
           }}
           onFocus={(focusedField) => {
             console.log("focusField", focusedField);
@@ -96,12 +95,4 @@ const CreditScreen = () => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  cardDetails: state.cardDetails.cardDetails,
-});
-
-const mapDispatchToProps = {
-  updateCardDetails,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(CreditScreen);
+export default CreditScreen;
