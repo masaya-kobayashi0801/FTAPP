@@ -11,6 +11,8 @@ import {
   SafeAreaView,
 } from "react-native";
 import { StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
+import { useClientSecret } from "../context/ClientSecretContext";
 // import Ionicons from "react-native-vector-icons/Ionicons";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -37,7 +39,8 @@ const HomeScreen = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [taskId, setTaskId] = useState("");
   const [fetchData, setFetchData] = useState(null);
-  const [clientSecret, setClientSecret] = useState();
+  const { clientSecret } = useClientSecret();
+  const cardDetails = useSelector((state) => state.cardDetails.cardDetails);
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);
@@ -69,24 +72,6 @@ const HomeScreen = () => {
       update(ref(db), updates);
     }
   };
-
-  const fetchClientSecret = async () => {
-    try {
-      const response = await createPaymentIntent({
-        amount: 10000,
-        currency: "usd",
-      });
-
-      const clientSecret = response.data.clientSecret;
-      setClientSecret(clientSecret);
-    } catch (error) {
-      console.error("dbg001" + error);
-    }
-  };
-
-  useEffect(() => {
-    fetchClientSecret();
-  }, []);
 
   useEffect(() => {
     const user = auth.currentUser;
