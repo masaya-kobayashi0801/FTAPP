@@ -9,11 +9,10 @@ import {
   Button,
 } from "react-native";
 import React, { useRef, useEffect, useState } from "react";
-import { useClientSecret } from "../context/ClientSecretContext";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 // firebase
-import { auth, createPaymentIntent } from "../firebase";
+import { auth } from "../firebase";
 import { child, getDatabase, ref, update, remove } from "firebase/database";
 // stripe
 import { useStripe } from "@stripe/stripe-react-native";
@@ -37,9 +36,6 @@ const Task = ({ taskData, index, clientKey }) => {
 
   // useStripe
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
-  // const [clientSecret, setClientSecret] = useState();
-  const {clientSecret} = useClientSecret();
-  console.log("Task" + clientSecret);
 
   const taskTime = new Date(date + " " + time);
 
@@ -95,20 +91,6 @@ const Task = ({ taskData, index, clientKey }) => {
       .catch((error) => {});
   };
 
-  // const fetchClientSecret = async () => {
-  //   try {
-  //     const response = await createPaymentIntent({
-  //       amount: 10000,
-  //       currency: "usd",
-  //     });
-
-  //     const clientSecret = response.data.clientSecret;
-  //     setClientSecret(clientSecret);
-  //   } catch (error) {
-  //     console.error("dbg001" + error);
-  //   }
-  // };
-
   const handlePay = async () => {
     try {
       const { error } = await initPaymentSheet({
@@ -130,12 +112,6 @@ const Task = ({ taskData, index, clientKey }) => {
       console.error("エラーが発生しました", err);
     }
   };
-
-  // useEffect
-
-  // useEffect(() => {
-  //   fetchClientSecret();
-  // }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {

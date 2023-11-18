@@ -17,8 +17,6 @@ import { StripeProvider } from "@stripe/stripe-react-native";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
-import { Provider } from "react-redux";
-import store from "./store/store";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -50,50 +48,44 @@ export default function App() {
     return <AppLoading />;
   } else {
     return (
-      <Provider store={store}>
-        <ClientSecretProvider>
-          <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
-            <NavigationContainer>
-              <Tab.Navigator
-                screenOptions={({ route }) => ({
-                  tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
+      <ClientSecretProvider>
+        <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
+          <NavigationContainer>
+            <Tab.Navigator
+              screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName;
 
-                    if (route.name === "Home") {
-                      iconName = focused
-                        ? "md-checkbox"
-                        : "md-checkbox-outline";
-                    } else if (route.name === "Timer") {
-                      iconName = focused ? "md-timer" : "md-timer-outline";
-                    } else if (route.name === "Credit") {
-                      iconName = focused ? "card" : "card-outline";
-                    }
-                    return (
-                      <Ionicons name={iconName} size={size} color={color} />
-                    );
-                  },
-                  tabBarActiveTintColor: "#2196F3",
-                  tabBarInactiveTintColor: "gray",
-                })}
-              >
-                {user ? (
-                  <>
-                    <Stack.Screen name="Home" component={HomeScreen} />
-                    <Stack.Screen name="Timer" component={TimerScreen} />
-                    <Stack.Screen name="Credit" component={CreditScreen} />
-                  </>
-                ) : (
-                  <>
-                    <Stack.Screen name="Login" component={LoginScreen} />
-                    <Stack.Screen name="Register" component={RegisterScreen} />
-                  </>
-                )}
-              </Tab.Navigator>
-            </NavigationContainer>
-            {/* //{" "} */}
-          </StripeProvider>
-        </ClientSecretProvider>
-      </Provider>
+                  if (route.name === "Home") {
+                    iconName = focused ? "md-checkbox" : "md-checkbox-outline";
+                  } else if (route.name === "Timer") {
+                    iconName = focused ? "md-timer" : "md-timer-outline";
+                  } else if (route.name === "Credit") {
+                    iconName = focused ? "card" : "card-outline";
+                  }
+                  return <Ionicons name={iconName} size={size} color={color} />;
+                },
+                tabBarActiveTintColor: "#2196F3",
+                tabBarInactiveTintColor: "gray",
+              })}
+            >
+              {user ? (
+                <>
+                  <Stack.Screen name="Home" component={HomeScreen} />
+                  <Stack.Screen name="Timer" component={TimerScreen} />
+                  <Stack.Screen name="Credit" component={CreditScreen} />
+                </>
+              ) : (
+                <>
+                  <Stack.Screen name="Login" component={LoginScreen} />
+                  <Stack.Screen name="Register" component={RegisterScreen} />
+                </>
+              )}
+            </Tab.Navigator>
+          </NavigationContainer>
+          {/* //{" "} */}
+        </StripeProvider>
+      </ClientSecretProvider>
     );
   }
 }
