@@ -18,7 +18,7 @@ import { child, getDatabase, ref, update, remove } from "firebase/database";
 import { useStripe } from "@stripe/stripe-react-native";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 
-const Task = ({ taskData, index, clientKey }) => {
+const Task = ({ taskData, index, clientKey, cardDetails }) => {
   // firebase
   const db = getDatabase();
   const userId = auth.currentUser.uid;
@@ -36,6 +36,7 @@ const Task = ({ taskData, index, clientKey }) => {
 
   // useStripe
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const stripe = useStripe();
 
   const taskTime = new Date(date + " " + time);
 
@@ -91,28 +92,50 @@ const Task = ({ taskData, index, clientKey }) => {
       .catch((error) => {});
   };
 
+  // const handlePay = async () => {
+  //   try {
+  //     const { error } = await initPaymentSheet({
+  //       paymentIntentClientSecret: clientKey, // paymentIntentのクライアントシークレットキー。これは支払いの確認と認証に使用
+  //       merchantDisplayName: "FTAPP", // : 支払いプロセス中に表示される商店名または表示名。ユーザーに表示される情報
+  //       publishableKey: STRIPE_PUBLISHABLE_KEY,
+  //     });
+  //     if (!error) {
+  //       const result = await presentPaymentSheet({ clientSecret });
+  //       if (result.error) {
+  //         console.log("Error:", result.error);
+  //       } else {
+  //         console.log("Success:", result);
+  //       }
+  //     } else {
+  //       console.log("initPaymentSheetでエラーが発生しました", error);
+  //     }
+  //   } catch (err) {
+  //     console.error("エラーが発生しました", err);
+  //   }
+  // };
+
   const handlePay = async () => {
     try {
-      const { error } = await initPaymentSheet({
-        paymentIntentClientSecret: clientKey, // paymentIntentのクライアントシークレットキー。これは支払いの確認と認証に使用
-        merchantDisplayName: "FTAPP", // : 支払いプロセス中に表示される商店名または表示名。ユーザーに表示される情報
-        publishableKey: STRIPE_PUBLISHABLE_KEY,
-      });
-      if (!error) {
-        const result = await presentPaymentSheet({ clientSecret });
-        if (result.error) {
-          console.log("Error:", result.error);
-        } else {
-          console.log("Success:", result);
-        }
+      const { paymentMethod, error: errorPaymentMethod } =
+        await stripe.createPaymentMethod({
+          paymentMethodType: "Card",
+          paymentMethodData: cardDetails,
+        });
+
+      if (errorPaymentMethod) {
+        console.error("Error creating payment method:", errorPaymentMethod);
       } else {
-        console.log("initPaymentSheetでエラーが発生しました", error);
+        const { error } = await stripe.confirmPayment(clientKey, paymentMethod);
+        if (error) {
+          console.error("Error processing payment:", error);
+        } else {
+          console.log("Payment successful!");
+        }
       }
-    } catch (err) {
-      console.error("エラーが発生しました", err);
+    } catch (error) {
+      console.error("Error processing payment:", error);
     }
   };
-
   useEffect(() => {
     const intervalId = setInterval(() => {
       const now = new Date();

@@ -97,6 +97,7 @@ const HomeScreen = () => {
                 taskData={fetchData[key]}
                 clientKey={clientSecret}
                 index={key}
+                cardDetails={cardDetails}
               />
             </React.Fragment>
           ))}
