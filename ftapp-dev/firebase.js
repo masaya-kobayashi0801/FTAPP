@@ -2,11 +2,16 @@
 import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import { getAuth } from "firebase/auth";
+import {
+  getAuth,
+  getReactNativePersistence,
+  initializeAuth,
+} from "firebase/auth";
 import { getDatabase } from "firebase/database";
 //getFunctions　firebaseプロジェクト内のcloud functionsを取得するために使用
 //httpsCallable　Firebase Cloud FuonctionsのHTTPエンドポイントを呼び出す
 import { getFunctions, httpsCallable } from "firebase/functions";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,9 +26,16 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
 // Initialize Firebase Authentication and get a reference to the service
-export const auth = getAuth(app);
+// export const auth = getAuth(app);
 export const database = getDatabase(app);
 export const functions = getFunctions(app);
+
 // エンドポイント
-export const createPaymentIntent = httpsCallable(functions, 'createPaymentIntent');
+export const createPaymentIntent = httpsCallable(
+  functions,
+  "createPaymentIntent"
+);
