@@ -116,6 +116,7 @@ const HomeScreen = () => {
         visible={modalVisible}
         onRequestClose={() => {
           setMedalVisible(!modalVisible);
+          setDate(new Date());
         }}
       >
         <View style={styles.centeredView}>
@@ -210,6 +211,7 @@ const HomeScreen = () => {
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
                 setMedalVisible(!modalVisible);
+                setDate(new Date());
               }}
             >
               <Text style={styles.textStyle}>Hide Modal</Text>
