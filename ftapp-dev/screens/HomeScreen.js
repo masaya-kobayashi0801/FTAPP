@@ -29,7 +29,7 @@ import Task from "../components/Task";
 
 const HomeScreen = () => {
   const db = getDatabase();
-  const [modalVisible, setMedalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [taskText, onChangeTaskText] = useState("");
   const [goalText, onChangeGoalText] = useState("");
   const [date, setDate] = useState(new Date());
@@ -105,7 +105,7 @@ const HomeScreen = () => {
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => {
-          setMedalVisible(true);
+          setModalVisible(true);
         }}
       >
         <Ionicons name="add" size={30} color="white" />
@@ -115,7 +115,7 @@ const HomeScreen = () => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          setMedalVisible(!modalVisible);
+          setModalVisible(!modalVisible);
           setDate(new Date());
         }}
       >
@@ -197,7 +197,7 @@ const HomeScreen = () => {
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
                 writeTaskPost();
-                setMedalVisible(false);
+                setModalVisible(false);
                 onChangeTaskText("");
                 onChangeGoalText("");
                 setSelectedManHour("0.5");
@@ -210,7 +210,7 @@ const HomeScreen = () => {
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
-                setMedalVisible(!modalVisible);
+                setModalVisible(!modalVisible);
                 setDate(new Date());
               }}
             >
