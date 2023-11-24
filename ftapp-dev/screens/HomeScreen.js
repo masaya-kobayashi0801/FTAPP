@@ -9,6 +9,7 @@ import {
   Pressable,
   TextInput,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
@@ -50,6 +51,17 @@ const HomeScreen = () => {
   const showMode = (currentMode) => {
     setShow(true);
     setMode(currentMode);
+  };
+
+  const isObjectEmpty = (obj) => {
+    return Object.keys(obj).length === 0;
+  };
+
+  const showAlert = () => {
+    Alert.alert(
+      "",
+      "クレジットカードを登録してください。開始時間を守っている限り課金はされません。"
+    );
   };
 
   const writeTaskPost = () => {
@@ -105,7 +117,7 @@ const HomeScreen = () => {
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => {
-          setModalVisible(true);
+          isObjectEmpty(cardDetails) ? showAlert() : setModalVisible(true);
         }}
       >
         <Ionicons name="add" size={30} color="white" />
