@@ -66,31 +66,31 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
     setMode(currentMode);
   };
 
-  const writeTaskUpdate = () => {
-    const obj = new Date(date);
-    const str = JSON.stringify(obj);
-    const arr = str.split("T");
-    const timePart = arr[1];
-    const newTime = `${time}.000Z`;
-    const newStr = str.replace(timePart, newTime);
-    const usersRef = child(ref(db), "users/" + userId + "/tasks/" + index);
-    update(usersRef, {
-      date: date,
-      goal: goalText,
-      manHour: selectedManHour,
-      status: selectedStatus,
-      task: taskText,
-      time: time,
-      targetDate: newStr,
-    });
-  };
+  // const writeTaskUpdate = () => {
+  //   const obj = new Date(date);
+  //   const str = JSON.stringify(obj);
+  //   const arr = str.split("T");
+  //   const timePart = arr[1];
+  //   const newTime = `${time}.000Z`;
+  //   const newStr = str.replace(timePart, newTime);
+  //   const usersRef = child(ref(db), "users/" + userId + "/tasks/" + index);
+  //   update(usersRef, {
+  //     date: date,
+  //     goal: goalText,
+  //     manHour: selectedManHour,
+  //     status: selectedStatus,
+  //     task: taskText,
+  //     time: time,
+  //     targetDate: newStr,
+  //   });
+  // };
 
-  const writeTaskDelete = () => {
-    const userRef = child(ref(db), "users/" + userId + "/tasks/" + index);
-    remove(userRef)
-      .then(() => {})
-      .catch((error) => {});
-  };
+  // const writeTaskDelete = () => {
+  //   const userRef = child(ref(db), "users/" + userId + "/tasks/" + index);
+  //   remove(userRef)
+  //     .then(() => {})
+  //     .catch((error) => {});
+  // };
 
   // const handlePay = async () => {
   //   try {
@@ -271,7 +271,7 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
                 width: 200,
               }}
             >
-              <Button
+              {/* <Button
                 title="Update"
                 onPress={() => {
                   writeTaskUpdate();
@@ -284,7 +284,7 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
                   writeTaskDelete();
                   setModalVisible(false);
                 }}
-              ></Button>
+              ></Button> */}
             </View>
           </View>
         </View>
