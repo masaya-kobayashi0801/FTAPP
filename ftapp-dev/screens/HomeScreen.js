@@ -1,4 +1,5 @@
 import { auth, createPaymentIntent } from "../firebase";
+import { signOut } from "firebase/auth";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -13,7 +14,6 @@ import {
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
-import { useClientSecret } from "../context/ClientSecretContext";
 // import Ionicons from "react-native-vector-icons/Ionicons";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -40,8 +40,8 @@ const HomeScreen = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [taskId, setTaskId] = useState("");
   const [fetchData, setFetchData] = useState(null);
-  const { clientSecret } = useClientSecret();
   const cardDetails = useSelector((state) => state.cardDetails.cardDetails);
+  const clientSecret = useSelector((state) => state.clientSecret.clientSecret);
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);
@@ -62,6 +62,16 @@ const HomeScreen = () => {
       "",
       "クレジットカードを登録してください。開始時間を守っている限り課金はされません。"
     );
+  };
+
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("logout");
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
   };
 
   const writeTaskPost = () => {
@@ -121,6 +131,9 @@ const HomeScreen = () => {
         }}
       >
         <Ionicons name="add" size={30} color="white" />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleLogout}>
+        <Text>ログアウト</Text>
       </TouchableOpacity>
       <Modal
         animationType="slide"

@@ -7,13 +7,13 @@ import {
 } from "@stripe/stripe-react-native";
 import { createPaymentIntent } from "../firebase";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
-import { useClientSecret } from "../context/ClientSecretContext";
 import { useDispatch } from "react-redux";
 import { createCardDetails } from "../actions/cardDetailsActions";
+import { createClientSecret } from "../actions/clientSecretAction";
 
 const CreditScreen = () => {
   const stripe = useStripe();
-  const { clientSecret, setClientSecret } = useClientSecret();
+  const [clientSecret, setClientSecret] = useState("");
   const [paymentResult, setPaymentResult] = useState("");
   const [cardDetails, setCardDetails] = useState({});
   const dispatch = useDispatch();
@@ -27,6 +27,7 @@ const CreditScreen = () => {
       const clientSecret = response.data.clientSecret;
       setClientSecret(clientSecret);
       dispatch(createCardDetails(cardDetails));
+      dispatch(createClientSecret(clientSecret));
       console.log("Card registered successfully!");
     } catch (error) {
       console.error("Error registering card:", error);
