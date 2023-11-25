@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   TextInput,
   Button,
+  Alert,
 } from "react-native";
 import React, { useRef, useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
@@ -147,14 +148,13 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         console.log(`${hours} hours, ${minutes} minutes, ${seconds} seconds`);
         if (hours === 0 && minutes <= 15 && !alertShownRef.current) {
-          // Alert.alert("15分以内になりました！");
           setEnabled(true);
           alertShownRef.current = true;
         }
         if (hours === 0 && minutes === 0 && seconds === 1) {
           if (selectedStatus === "To Do") {
             handlePay();
-            console.log("status変更されていないので、罰金です");
+            Alert.alert("罰金", "自分で設定した開始時間を守れませんでした");
           }
           setEnabled(false);
         }
