@@ -57,6 +57,10 @@ const HomeScreen = () => {
     return Object.keys(obj).length === 0;
   };
 
+  const settingAlert = () => {
+    Alert.alert("", "開始時間を設定しました。必ず守りましょう");
+  };
+
   const showAlert = () => {
     Alert.alert(
       "",
@@ -228,6 +232,7 @@ const HomeScreen = () => {
                 setSelectedManHour("0.5");
                 setSelectedStatus("To Do");
                 setDate(new Date());
+                settingAlert();
               }}
             >
               <Text style={styles.textStyle}>Submit</Text>
