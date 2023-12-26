@@ -12,7 +12,6 @@ import LoginScreen from "./screens/LoginScreen";
 import CreditScreen from "./screens/CreditScreen";
 import { auth } from "./firebase";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// import Ionicons from "react-native-vector-icons/Ionicons";
 import { Ionicons } from "@expo/vector-icons";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
@@ -45,6 +44,7 @@ export default function App() {
     loadFonts().then(() => setFontsLoaded(true));
     return () => unsubscribe();
   }, []);
+
   if (!fontsLoaded || loading) {
     return <AppLoading />;
   } else {
@@ -52,43 +52,42 @@ export default function App() {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
-            <NavigationContainer>
-              <Tab.Navigator
-                screenOptions={({ route }) => ({
-                  tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
+            {user ? (
+              <NavigationContainer>
+                <Tab.Navigator
+                  screenOptions={({ route }) => ({
+                    tabBarIcon: ({ focused, color, size }) => {
+                      let iconName;
 
-                    if (route.name === "Home") {
-                      iconName = focused
-                        ? "md-checkbox"
-                        : "md-checkbox-outline";
-                    } else if (route.name === "Timer") {
-                      iconName = focused ? "md-timer" : "md-timer-outline";
-                    } else if (route.name === "Credit") {
-                      iconName = focused ? "card" : "card-outline";
-                    }
-                    return (
-                      <Ionicons name={iconName} size={size} color={color} />
-                    );
-                  },
-                  tabBarActiveTintColor: "#2196F3",
-                  tabBarInactiveTintColor: "gray",
-                })}
-              >
-                {user ? (
-                  <>
-                    <Stack.Screen name="Home" component={HomeScreen} />
-                    <Stack.Screen name="Credit" component={CreditScreen} />
-                  </>
-                ) : (
-                  <>
-                    <Stack.Screen name="Login" component={LoginScreen} />
-                    <Stack.Screen name="Register" component={RegisterScreen} />
-                  </>
-                )}
-              </Tab.Navigator>
-            </NavigationContainer>
-            {/* //{" "} */}
+                      if (route.name === "Home") {
+                        iconName = focused
+                          ? "md-checkbox"
+                          : "md-checkbox-outline";
+                      } else if (route.name === "Timer") {
+                        iconName = focused ? "md-timer" : "md-timer-outline";
+                      } else if (route.name === "Credit") {
+                        iconName = focused ? "card" : "card-outline";
+                      }
+                      return (
+                        <Ionicons name={iconName} size={size} color={color} />
+                      );
+                    },
+                    tabBarActiveTintColor: "#2196F3",
+                    tabBarInactiveTintColor: "gray",
+                  })}
+                >
+                  <Stack.Screen name="Home" component={HomeScreen} />
+                  <Stack.Screen name="Credit" component={CreditScreen} />
+                </Tab.Navigator>
+              </NavigationContainer>
+            ) : (
+              <NavigationContainer>
+                <Stack.Navigator>
+                  <Stack.Screen name="Login" component={LoginScreen} />
+                  <Stack.Screen name="Register" component={RegisterScreen} />
+                </Stack.Navigator>
+              </NavigationContainer>
+            )}
           </StripeProvider>
         </PersistGate>
       </Provider>
