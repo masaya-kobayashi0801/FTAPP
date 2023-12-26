@@ -9,7 +9,6 @@ import { onAuthStateChanged } from "firebase/auth";
 import RegisterScreen from "./screens/RegisterScreen";
 import HomeScreen from "./screens/HomeScreen";
 import LoginScreen from "./screens/LoginScreen";
-import TimerScreen from "./screens/TimerScreen";
 import CreditScreen from "./screens/CreditScreen";
 import { auth } from "./firebase";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -79,7 +78,6 @@ export default function App() {
                 {user ? (
                   <>
                     <Stack.Screen name="Home" component={HomeScreen} />
-                    <Stack.Screen name="Timer" component={TimerScreen} />
                     <Stack.Screen name="Credit" component={CreditScreen} />
                   </>
                 ) : (
