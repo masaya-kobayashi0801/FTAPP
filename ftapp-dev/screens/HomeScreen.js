@@ -112,9 +112,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ textAlign: "center" }}>
-        ここにタスクデータを表示するよ
-      </Text>
+      <Text style={{ textAlign: "center" }}>My Task</Text>
       <View>
         {fetchData &&
           Object.keys(fetchData).map((key) => (
@@ -236,15 +234,6 @@ const HomeScreen = () => {
               }}
             >
               <Text style={styles.textStyle}>Submit</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                setDate(new Date());
-              }}
-            >
-              <Text style={styles.textStyle}>Hide Modal</Text>
             </Pressable>
           </View>
         </View>
