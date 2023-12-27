@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import { View, Button, Text } from "react-native";
-import {
-  StripeProvider,
-  CardField,
-  useStripe,
-} from "@stripe/stripe-react-native";
+import { View, Button } from "react-native";
+import { StripeProvider, CardField } from "@stripe/stripe-react-native";
 import { createPaymentIntent } from "../firebase";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 import { useDispatch } from "react-redux";
@@ -12,9 +8,6 @@ import { createCardDetails } from "../actions/cardDetailsActions";
 import { createClientSecret } from "../actions/clientSecretAction";
 
 const CreditScreen = () => {
-  const stripe = useStripe();
-  const [clientSecret, setClientSecret] = useState("");
-  const [paymentResult, setPaymentResult] = useState("");
   const [cardDetails, setCardDetails] = useState({});
   const dispatch = useDispatch();
 
@@ -25,42 +18,11 @@ const CreditScreen = () => {
         currency: "usd",
       });
       const clientSecret = response.data.clientSecret;
-      setClientSecret(clientSecret);
       dispatch(createCardDetails(cardDetails));
       dispatch(createClientSecret(clientSecret));
       console.log("Card registered successfully!");
     } catch (error) {
       console.error("Error registering card:", error);
-    }
-  };
-
-  const handlePayPress = async () => {
-    try {
-      const { paymentMethod, error: errorPaymentMethod } =
-        await stripe.createPaymentMethod({
-          paymentMethodType: "Card",
-          paymentMethodData: cardDetails,
-        });
-
-      if (errorPaymentMethod) {
-        console.error("Error creating payment method:", errorPaymentMethod);
-        setPaymentResult("Payment failed");
-      } else {
-        const { error } = await stripe.confirmPayment(
-          clientSecret,
-          paymentMethod
-        );
-        if (error) {
-          console.error("Error processing payment:", error);
-          setPaymentResult("Payment failed");
-        } else {
-          console.log("Payment successful!");
-          setPaymentResult("Payment successful!");
-        }
-      }
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      setPaymentResult("Payment failed");
     }
   };
 
@@ -89,8 +51,6 @@ const CreditScreen = () => {
           }}
         />
         <Button title="Register Card" onPress={handleRegisterCard} />
-        <Button title="Pay" onPress={handlePayPress} />
-        <Text>{paymentResult}</Text>
       </View>
     </StripeProvider>
   );
