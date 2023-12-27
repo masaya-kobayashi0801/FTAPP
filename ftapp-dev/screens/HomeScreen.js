@@ -135,7 +135,9 @@ const HomeScreen = () => {
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
       <TouchableOpacity onPress={handleLogout}>
-        <Text>ログアウト</Text>
+        <Text style={[styles.button, styles.buttonLogout, styles.logoutButton]}>
+          Logout
+        </Text>
       </TouchableOpacity>
       <Modal
         animationType="slide"
@@ -318,6 +320,14 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     backgroundColor: "#2196F3",
+  },
+  buttonLogout: {
+    width: "17%",
+  },
+  logoutButton: {
+    position: "absolute",
+    top: 10,
+    right: 15,
   },
   submitButton: {
     borderWidth: 1,
