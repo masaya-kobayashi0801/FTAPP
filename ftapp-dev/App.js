@@ -16,7 +16,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 import * as Font from "expo-font";
-import AppLoading from "expo-app-loading";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,8 +48,9 @@ export default function App() {
   }, []);
 
   if (!fontsLoaded || loading) {
-    return <AppLoading />;
+    return;
   } else {
+    SplashScreen.hideAsync();
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
