@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Button } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 import { StripeProvider, CardField } from "@stripe/stripe-react-native";
 import { createPaymentIntent } from "../firebase";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
@@ -50,10 +50,31 @@ const CreditScreen = () => {
             console.log("focusField", focusedField);
           }}
         />
-        <Button title="Register Card" onPress={handleRegisterCard} />
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={handleRegisterCard}
+        >
+          <Text style={styles.buttonText}>Register Card</Text>
+        </TouchableOpacity>
       </View>
     </StripeProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    width: "50%",
+    alignSelf: "center", // 中央に配置する
+    backgroundColor: "#2196F3",
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 16,
+  },
+});
 
 export default CreditScreen;
