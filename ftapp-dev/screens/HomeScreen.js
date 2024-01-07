@@ -126,6 +126,9 @@ const HomeScreen = () => {
             </React.Fragment>
           ))}
       </View>
+      <TouchableOpacity onPress={handleLogout}>
+        <Text style={[styles.buttonLogout, styles.logoutButton]}>Logout</Text>
+      </TouchableOpacity>
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => {
@@ -133,11 +136,6 @@ const HomeScreen = () => {
         }}
       >
         <Ionicons name="add" size={30} color="white" />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handleLogout}>
-        <Text style={[styles.button, styles.buttonLogout, styles.logoutButton]}>
-          Logout
-        </Text>
       </TouchableOpacity>
       <Modal
         animationType="slide"
@@ -323,6 +321,10 @@ const styles = StyleSheet.create({
   },
   buttonLogout: {
     width: "17%",
+    marginTop: 10,
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
   },
   logoutButton: {
     position: "absolute",
