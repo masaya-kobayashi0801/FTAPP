@@ -8,10 +8,12 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { auth } from "../firebase";
+import { useSelector } from "react-redux";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const isRegister = useSelector((state) => state.isRegister.isRegister);
 
   const handleLogin = async () => {
     try {
@@ -71,12 +73,14 @@ const LoginScreen = ({ navigation }) => {
       >
         <Text style={{ color: "white" }}>ログイン</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={{ marginTop: 10 }}
-        onPress={() => navigation.navigate("Register")}
-      >
-        <Text>ユーザ登録はこちら</Text>
-      </TouchableOpacity>
+      {!isRegister && (
+        <TouchableOpacity
+          style={{ marginTop: 10 }}
+          onPress={() => navigation.navigate("Register")}
+        >
+          <Text>ユーザ登録はこちら</Text>
+        </TouchableOpacity>
+      )}
     </KeyboardAvoidingView>
   );
 };

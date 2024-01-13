@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import React, { useState } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 import {
   View,
   TextInput,
@@ -8,14 +8,19 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { registerInfoAction } from "../actions/registerInfoAction";
 
 const RegisterScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+
   const handleRegister = async () => {
     try {
       const user = await createUserWithEmailAndPassword(auth, email, password);
       console.log(user);
+      dispatch(registerInfoAction(true));
     } catch (error) {
       console.log(error.message);
     }

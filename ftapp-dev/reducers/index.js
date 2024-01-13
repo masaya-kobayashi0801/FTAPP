@@ -3,6 +3,7 @@ import { persistReducer } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import cardDetailsReducer from "./cardDetailsReducer";
 import clientSecretReducer from "./clientSecretReducer";
+import registerInfoReducer from "./registerInfoReducer";
 
 const persistConfig = {
   key: "root",
@@ -12,6 +13,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   cardDetails: cardDetailsReducer,
   clientSecret: clientSecretReducer,
+  isRegister: registerInfoReducer,
   // 他のReducerがあればここに追加
 });
 
