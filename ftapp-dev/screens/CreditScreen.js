@@ -3,13 +3,14 @@ import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 import { StripeProvider, CardField } from "@stripe/stripe-react-native";
 import { createPaymentIntent } from "../firebase";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createCardDetails } from "../actions/cardDetailsActions";
 import { createClientSecret } from "../actions/clientSecretAction";
 
 const CreditScreen = () => {
   const [cardDetails, setCardDetails] = useState({});
   const dispatch = useDispatch();
+  const clientSecret = useSelector((state) => state.clientSecret.clientSecret);
 
   const handleRegisterCard = async () => {
     try {
@@ -17,9 +18,9 @@ const CreditScreen = () => {
         amount: 1000,
         currency: "usd",
       });
-      const clientSecret = response.data.clientSecret;
+      const newClientSecret = response.data.clientSecret;
       dispatch(createCardDetails(cardDetails));
-      dispatch(createClientSecret(clientSecret));
+      dispatch(createClientSecret(newClientSecret));
       console.log("Card registered successfully!");
     } catch (error) {
       console.error("Error registering card:", error);
@@ -51,8 +52,12 @@ const CreditScreen = () => {
           }}
         />
         <TouchableOpacity
-          style={styles.buttonContainer}
+          style={[
+            styles.buttonContainer,
+            { backgroundColor: clientSecret ? "#808080" : "#2196F3" },
+          ]}
           onPress={handleRegisterCard}
+          disabled={!!clientSecret}
         >
           <Text style={styles.buttonText}>Register Card</Text>
         </TouchableOpacity>

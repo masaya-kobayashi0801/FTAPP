@@ -126,8 +126,8 @@ const HomeScreen = () => {
             </React.Fragment>
           ))}
       </View>
-      <TouchableOpacity onPress={handleLogout}>
-        <Text style={[styles.buttonLogout, styles.logoutButton]}>Logout</Text>
+      <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+        <Text>Logout</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.addButton}
@@ -319,17 +319,9 @@ const styles = StyleSheet.create({
   buttonClose: {
     backgroundColor: "#2196F3",
   },
-  buttonLogout: {
-    width: "17%",
-    marginTop: 10,
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
   logoutButton: {
-    position: "absolute",
-    top: 10,
-    right: 15,
+    alignSelf: "flex-end",
+    marginRight: 20,
   },
   submitButton: {
     borderWidth: 1,
