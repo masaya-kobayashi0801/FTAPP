@@ -260,7 +260,6 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
                 >
                   <Picker.Item label="To Do" value="To Do" />
                   <Picker.Item label="In Progress" value="In Progress" />
-                  <Picker.Item label="resolved" value="resolved" />
                 </Picker>
               </View>
             </SafeAreaView>
