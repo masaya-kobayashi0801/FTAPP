@@ -42,6 +42,13 @@ const HomeScreen = () => {
   const [fetchData, setFetchData] = useState(null);
   const cardDetails = useSelector((state) => state.cardDetails.cardDetails);
   const clientSecret = useSelector((state) => state.clientSecret.clientSecret);
+  const localeTime = date.toLocaleTimeString("ja-JP", { hour12: false });
+  const timeParts = localeTime.split(":");
+  timeParts[2] = "00";
+  const copiedTimeParts = [...timeParts];
+  copiedTimeParts.pop();
+  const modifiedLocaleTime = timeParts.join(":");
+  const modifiedLocaleTimeText = copiedTimeParts.join(":");
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);
@@ -86,7 +93,7 @@ const HomeScreen = () => {
         task: taskText,
         goal: goalText,
         date: date.toDateString(),
-        time: date.toLocaleTimeString("ja-JP", { hour12: false }),
+        time: modifiedLocaleTime,
         manHour: selectedManHour,
         status: selectedStatus,
         targetDate: date,
@@ -176,10 +183,7 @@ const HomeScreen = () => {
                   onPress={() => showMode("time")}
                   style={styles.timeButtonStyle}
                 >
-                  <Text style={styles.dateText}>{`${date.toLocaleTimeString(
-                    "ja-JP",
-                    { hour12: false }
-                  )}`}</Text>
+                  <Text style={styles.dateText}>{modifiedLocaleTimeText}</Text>
                 </TouchableOpacity>
                 {show && (
                   <DateTimePicker
