@@ -140,6 +140,7 @@ const HomeScreen = () => {
         style={styles.addButton}
         onPress={() => {
           isObjectEmpty(cardDetails) ? showAlert() : setModalVisible(true);
+          setDate(new Date());
         }}
       >
         <Ionicons name="add" size={30} color="white" />
@@ -150,7 +151,6 @@ const HomeScreen = () => {
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
-          setDate(new Date());
         }}
       >
         <View style={styles.centeredView}>
