@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 import { StripeProvider, CardField } from "@stripe/stripe-react-native";
 import { createPaymentIntent } from "../firebase";
@@ -8,9 +8,15 @@ import { createCardDetails } from "../actions/cardDetailsActions";
 import { createClientSecret } from "../actions/clientSecretAction";
 
 const CreditScreen = () => {
+  const cardFieldRef = useRef();
   const [cardDetails, setCardDetails] = useState({});
   const dispatch = useDispatch();
   const clientSecret = useSelector((state) => state.clientSecret.clientSecret);
+
+  const handleClear = () => {
+    // CardFieldの値をクリア
+    cardFieldRef.current.clear();
+  };
 
   const handleRegisterCard = async () => {
     try {
@@ -22,6 +28,7 @@ const CreditScreen = () => {
       dispatch(createCardDetails(cardDetails));
       dispatch(createClientSecret(newClientSecret));
       console.log("Card registered successfully!");
+      handleClear();
     } catch (error) {
       console.error("Error registering card:", error);
     }
@@ -31,6 +38,7 @@ const CreditScreen = () => {
     <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
       <View>
         <CardField
+          ref={cardFieldRef}
           postalCodeEnabled={false}
           placeholders={{
             number: "4242 4242 4242 4242",
