@@ -36,10 +36,12 @@ const HomeScreen = () => {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState("date");
-  const [selectedManHour, setSelectedManHour] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedManHour, setSelectedManHour] = useState("0.5");
+  const [selectedStatus, setSelectedStatus] = useState("To Do");
   const [taskId, setTaskId] = useState("");
   const [fetchData, setFetchData] = useState(null);
+  const [showDateErrorText, setShowDateErrorText] = useState(false);
+
   const cardDetails = useSelector((state) => state.cardDetails.cardDetails);
   const clientSecret = useSelector((state) => state.clientSecret.clientSecret);
   const localeTime = date.toLocaleTimeString("ja-JP", { hour12: false });
@@ -98,11 +100,22 @@ const HomeScreen = () => {
         status: selectedStatus,
         targetDate: date,
       };
+      // 日時が現在時刻より前の日付の場合
+      const now = new Date();
+      const taskTime = new Date(date.toDateString() + " " + modifiedLocaleTime);
+      const diff = taskTime - now;
+      if (diff === 0 || diff <= 0) {
+        setShowDateErrorText(true);
+        return;
+      }
       const newTaskKey = push(child(ref(db), "tasks")).key;
       setTaskId(newTaskKey);
       const updates = {};
       updates["users/" + userId + "/tasks/" + newTaskKey] = taskData;
       update(ref(db), updates);
+      setModalVisible(false);
+      setShowDateErrorText(false);
+      settingAlert();
     }
   };
 
@@ -151,6 +164,7 @@ const HomeScreen = () => {
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
+          setShowDateErrorText(false);
         }}
       >
         <View style={styles.centeredView}>
@@ -194,6 +208,13 @@ const HomeScreen = () => {
                   />
                 )}
               </View>
+              <View>
+                {showDateErrorText && (
+                  <Text style={styles.errorText}>
+                    正しい日時を選択して下さい
+                  </Text>
+                )}
+              </View>
               <View style={styles.pickerContainer}>
                 <Text>Man hour</Text>
                 <Picker
@@ -228,13 +249,11 @@ const HomeScreen = () => {
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
                 writeTaskPost();
-                setModalVisible(false);
                 onChangeTaskText("");
                 onChangeGoalText("");
                 setSelectedManHour("0.5");
                 setSelectedStatus("To Do");
                 setDate(new Date());
-                settingAlert();
               }}
             >
               <Text style={styles.textStyle}>Submit</Text>
@@ -362,6 +381,10 @@ const styles = StyleSheet.create({
     width: "50%",
     borderWidth: 1,
     borderColor: "#000",
+  },
+  errorText: {
+    textAlign: "center",
+    color: "red",
   },
 });
 

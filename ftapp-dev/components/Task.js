@@ -47,9 +47,9 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
   const alertShownRef = useRef(false);
 
   let dateParts = date.split(" ");
-  let result = dateParts[1] + " " + dateParts[2];
+  let resultDate = dateParts[1] + " " + dateParts[2];
   let timeParts = time.split(":");
-  let result2 = " " + timeParts[0] + ":" + timeParts[1];
+  let resultTime = " " + timeParts[0] + ":" + timeParts[1];
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || valueDate;
@@ -178,10 +178,10 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
         style={styles.outline}
       >
         <View style={styles.container}>
-          <Text>Task:{taskText}</Text>
-          <Text>
-            {result}
-            {result2}
+          <Text style={styles.taskText}>Task : {taskText}</Text>
+          <Text style={styles.dateTimeText}>
+            {resultDate}
+            {resultTime}
           </Text>
         </View>
       </TouchableOpacity>
@@ -202,23 +202,27 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
                 onChangeText={onChangeTaskText}
                 value={taskText}
                 placeholder="Task"
+                editable={false}
               />
               <TextInput
                 style={styles.input}
                 onChangeText={onChangeGoalText}
                 value={goalText}
                 placeholder="Goal"
+                editable={false}
               />
               <View style={styles.buttonWrap}>
                 <TouchableOpacity
                   onPress={() => showMode("date")}
                   style={styles.dateButtonStyle}
+                  disabled={true}
                 >
                   <Text style={styles.dateText}>{date}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => showMode("time")}
                   style={styles.timeButtonStyle}
+                  disabled={true}
                 >
                   <Text style={styles.dateText}>{time}</Text>
                 </TouchableOpacity>
@@ -239,6 +243,7 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
                     setSelectedManHour(itemValue);
                   }}
                   style={styles.picker}
+                  enabled={false}
                 >
                   <Picker.Item label="0.5" value="0.5" />
                   <Picker.Item label="1" value="1" />
@@ -306,6 +311,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  taskText: {
+    fontSize: 16,
+  },
+  dateTimeText: {
+    fontWeight: "bold",
+    fontSize: 18,
   },
   addButton: {
     position: "absolute",
