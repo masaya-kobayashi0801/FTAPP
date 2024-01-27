@@ -86,12 +86,12 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
   //   });
   // };
 
-  // const writeTaskDelete = () => {
-  //   const userRef = child(ref(db), "users/" + userId + "/tasks/" + index);
-  //   remove(userRef)
-  //     .then(() => {})
-  //     .catch((error) => {});
-  // };
+  const writeTaskDelete = () => {
+    const userRef = ref(db, "users/" + userId + "/tasks/" + index);
+    remove(userRef)
+      .then(() => {})
+      .catch((error) => {});
+  };
 
   // const handlePay = async () => {
   //   try {
@@ -156,7 +156,7 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
             handlePay();
             Alert.alert("罰金", "自分で設定した開始時間を守れませんでした");
           }
-          setEnabled(false);
+          writeTaskDelete();
         }
       } else {
         clearInterval(intervalId);
