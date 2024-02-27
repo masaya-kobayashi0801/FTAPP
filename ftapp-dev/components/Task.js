@@ -19,7 +19,7 @@ import { child, getDatabase, ref, update, remove } from "firebase/database";
 import { useStripe } from "@stripe/stripe-react-native";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 
-const Task = ({ taskData, index, cardDetails }) => {
+const Task = ({ taskData, index }) => {
   // firebase
   const db = getDatabase();
   const userId = auth.currentUser.uid;
@@ -260,6 +260,7 @@ const Task = ({ taskData, index, cardDetails }) => {
                 width: 200,
               }}
             >
+              {/* 今後使うかも */}
               {/* <Button
                 title="Update"
                 onPress={() => {

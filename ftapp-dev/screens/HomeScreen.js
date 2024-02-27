@@ -137,12 +137,7 @@ const HomeScreen = () => {
         {fetchData &&
           Object.keys(fetchData).map((key) => (
             <React.Fragment key={key}>
-              <Task
-                taskData={fetchData[key]}
-                clientKey={clientSecret}
-                index={key}
-                cardDetails={cardDetails}
-              />
+              <Task taskData={fetchData[key]} index={key} />
             </React.Fragment>
           ))}
       </View>

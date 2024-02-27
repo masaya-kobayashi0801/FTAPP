@@ -1,64 +1,41 @@
 import React, { useRef, useState } from "react";
 import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 import { StripeProvider, CardField } from "@stripe/stripe-react-native";
-import { createPaymentIntent } from "../firebase";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 import { useDispatch, useSelector } from "react-redux";
 import { createCardDetails } from "../actions/cardDetailsActions";
 import { createClientSecret } from "../actions/clientSecretAction";
-import { createPaymentIntentId } from "../actions/paymentIntentActions";
 
 const CreditScreen = () => {
   const cardFieldRef = useRef();
   const [cardDetails, setCardDetails] = useState({});
-  console.log("cardDetails from", cardDetails);
   const dispatch = useDispatch();
   const clientSecret = useSelector((state) => state.clientSecret.clientSecret);
-  console.log("clientSecret", clientSecret);
-  // const cardDetails = useSelector((state) => state.cardDetails.cardDetails);
+  const fetchCardDetails = useSelector(
+    (state) => state.cardDetails.cardDetails
+  );
+  console.log("fetchCardDetails", fetchCardDetails);
 
   const handleClear = () => {
     // CardFieldの値をクリア
     cardFieldRef.current.clear();
   };
 
+  // カードの登録のみを行う
   const handleRegisterCard = async () => {
     try {
-      const response = await createPaymentIntent({
-        amount: 1000,
-        currency: "usd",
-      });
-      console.log("response data", response);
-      const newClientSecret = response.data.clientSecret;
-      const paymentIntentId = response.data.paymentIntentId;
-      console.log("handle paymentIntentId", paymentIntentId);
       dispatch(createCardDetails(cardDetails));
-      dispatch(createClientSecret(newClientSecret));
-      dispatch(createPaymentIntentId(paymentIntentId));
       console.log("Card registered successfully!");
       // handleClear();
     } catch (error) {
       console.error("Error registering card:", error);
     }
   };
-
+  // 後ほど削除
   const initState = () => {
     dispatch(createCardDetails({}));
     dispatch(createClientSecret(""));
-    dispatch(createPaymentIntentId(""));
   };
-
-  // const confirmResponse = async () => {
-  //   try {
-  //     const response = await createPaymentIntent({
-  //       amount: 1000,
-  //       currency: "usd",
-  //     });
-  //     console.log("response of createPaymentIntent", response);
-  //   } catch (error) {
-  //     console.log("error", error);
-  //   }
-  // };
 
   return (
     <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
@@ -95,12 +72,6 @@ const CreditScreen = () => {
         >
           <Text style={styles.buttonText}>Register Card</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={[styles.buttonContainer]}
-          onPress={confirmResponse}
-        >
-          <Text style={styles.buttonText}>response</Text>
-        </TouchableOpacity> */}
         <TouchableOpacity style={[styles.buttonContainer]} onPress={initState}>
           <Text style={styles.buttonText}>initState</Text>
         </TouchableOpacity>
