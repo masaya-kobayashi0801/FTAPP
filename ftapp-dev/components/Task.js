@@ -13,13 +13,13 @@ import React, { useRef, useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 // firebase
-import { auth } from "../firebase";
+import { auth, createPaymentIntent } from "../firebase";
 import { child, getDatabase, ref, update, remove } from "firebase/database";
 // stripe
 import { useStripe } from "@stripe/stripe-react-native";
 import { STRIPE_PUBLISHABLE_KEY } from "@env";
 
-const Task = ({ taskData, index, clientKey, cardDetails }) => {
+const Task = ({ taskData, index }) => {
   // firebase
   const db = getDatabase();
   const userId = auth.currentUser.uid;
@@ -36,13 +36,9 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
   const [enabled, setEnabled] = useState(false);
 
   // useStripe
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const stripe = useStripe();
-
   const taskTime = new Date(date + " " + time);
-
   const [valueDate, setValueData] = useState(taskTime);
-
   //useRef
   const alertShownRef = useRef(false);
 
@@ -93,40 +89,29 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
       .catch((error) => {});
   };
 
-  // const handlePay = async () => {
-  //   try {
-  //     const { error } = await initPaymentSheet({
-  //       paymentIntentClientSecret: clientKey, // paymentIntentのクライアントシークレットキー。これは支払いの確認と認証に使用
-  //       merchantDisplayName: "FTAPP", // : 支払いプロセス中に表示される商店名または表示名。ユーザーに表示される情報
-  //       publishableKey: STRIPE_PUBLISHABLE_KEY,
-  //     });
-  //     if (!error) {
-  //       const result = await presentPaymentSheet({ clientSecret });
-  //       if (result.error) {
-  //         console.log("Error:", result.error);
-  //       } else {
-  //         console.log("Success:", result);
-  //       }
-  //     } else {
-  //       console.log("initPaymentSheetでエラーが発生しました", error);
-  //     }
-  //   } catch (err) {
-  //     console.error("エラーが発生しました", err);
-  //   }
-  // };
+  const fetchClientSecret = async () => {
+    const response = await createPaymentIntent({
+      amount: 1000,
+      currency: "usd",
+    });
+    const newClientSecret = response.data.clientSecret;
+    return newClientSecret;
+  };
 
   const handlePay = async () => {
     try {
+      const newClientSecret = await fetchClientSecret();
       const { paymentMethod, error: errorPaymentMethod } =
         await stripe.createPaymentMethod({
           paymentMethodType: "Card",
-          paymentMethodData: cardDetails,
         });
-
       if (errorPaymentMethod) {
         console.error("Error creating payment method:", errorPaymentMethod);
       } else {
-        const { error } = await stripe.confirmPayment(clientKey, paymentMethod);
+        const { error } = await stripe.confirmPayment(
+          newClientSecret,
+          paymentMethod
+        );
         if (error) {
           console.error("Error processing payment:", error);
         } else {
@@ -275,6 +260,7 @@ const Task = ({ taskData, index, clientKey, cardDetails }) => {
                 width: 200,
               }}
             >
+              {/* 今後使うかも */}
               {/* <Button
                 title="Update"
                 onPress={() => {
