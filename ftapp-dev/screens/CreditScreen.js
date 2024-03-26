@@ -18,10 +18,9 @@ import {
 } from "../firebase";
 
 const CreditScreen = () => {
-  const cardFieldRef = useRef();
   // useState
-  const [cardDetails, setCardDetails] = useState({});
   const [loading, setLoading] = useState(false);
+  const [registerComplete, setRegisterComplete] = useState(false);
   // redux
   const dispatch = useDispatch();
   const clientSecret = useSelector((state) => state.clientSecret.clientSecret);
@@ -32,21 +31,6 @@ const CreditScreen = () => {
   // stripe
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
-  const handleClear = () => {
-    // CardFieldの値をクリア
-    cardFieldRef.current.clear();
-  };
-
-  // カードの登録のみを行う
-  const handleRegisterCard = async () => {
-    try {
-      dispatch(createCardDetails(cardDetails));
-      console.log("Card registered successfully!");
-      // handleClear();
-    } catch (error) {
-      console.error("Error registering card:", error);
-    }
-  };
   // 後ほど削除
   const initState = () => {
     dispatch(createCardDetails({}));
@@ -96,27 +80,29 @@ const CreditScreen = () => {
         const paymentMethods = response.data;
         // storeにdispatchする
         dispatch(createPaymentMethods(paymentMethods));
+        // 登録状態更新
+        setRegisterComplete(true);
       } catch (e) {
         console.error("Error creating payment methods:", e);
       }
     }
   };
   // テスト用
-  const handleCheckout = async () => {
-    try {
-      await createPaymentIntent({
-        // storeから取得するけどテストでuseStateから取得
-        customerId: customerId,
-        paymentMethodId: paymentMethods.data[0].id,
-      });
-      // 成功した場合の追加の処理をここに記述する
-      console.log("成功しました");
-    } catch (error) {
-      // エラーが発生した場合の処理をここに記述する
-      console.error("エラーが発生しました:", error);
-      // エラーをユーザーに通知するなどの適切な処理を行う
-    }
-  };
+  // const handleCheckout = async () => {
+  //   try {
+  //     await createPaymentIntent({
+  //       // storeから取得するけどテストでuseStateから取得
+  //       customerId: customerId,
+  //       paymentMethodId: paymentMethods.data[0].id,
+  //     });
+  //     // 成功した場合の追加の処理をここに記述する
+  //     console.log("成功しました");
+  //   } catch (error) {
+  //     // エラーが発生した場合の処理をここに記述する
+  //     console.error("エラーが発生しました:", error);
+  //     // エラーをユーザーに通知するなどの適切な処理を行う
+  //   }
+  // };
 
   useEffect(() => {
     if (!customerId) {
@@ -127,57 +113,28 @@ const CreditScreen = () => {
   return (
     <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
       <View>
-        <CardField
-          ref={cardFieldRef}
-          postalCodeEnabled={false}
-          placeholders={{
-            number: "4242 4242 4242 4242",
-          }}
-          cardStyle={{
-            backgroundColor: "#FFFFFF",
-            textColor: "#000000",
-          }}
-          style={{
-            width: "100%",
-            height: 50,
-            marginVertical: 30,
-          }}
-          onCardChange={(cardDetails) => {
-            setCardDetails(cardDetails);
-          }}
-          onFocus={(focusedField) => {
-            console.log("focusField", focusedField);
-          }}
-        />
-        <TouchableOpacity
-          style={[
-            styles.buttonContainer,
-            { backgroundColor: clientSecret ? "#808080" : "#2196F3" },
-          ]}
-          onPress={handleRegisterCard}
-          disabled={!!clientSecret}
-        >
-          <Text style={styles.buttonText}>Register Card</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={[styles.buttonContainer]} onPress={initState}>
           <Text style={styles.buttonText}>initState</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.buttonContainer]}
-          disabled={!loading}
+          style={[
+            styles.buttonContainer,
+            { backgroundColor: registerComplete ? "#808080" : "2196F3" },
+          ]}
+          disabled={!loading || registerComplete}
           onPress={openPaymentSheet}
         >
           {/* テキスト名変更する */}
-          <Text style={styles.buttonText}>Set Up</Text>
+          <Text style={styles.buttonText}>クレジットカード登録</Text>
         </TouchableOpacity>
         {/* テスト用 */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.buttonContainer]}
           disabled={!loading}
           onPress={handleCheckout}
         >
           <Text style={styles.buttonText}>決済テスト</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </StripeProvider>
   );
