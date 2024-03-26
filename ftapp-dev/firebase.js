@@ -39,3 +39,8 @@ export const createPaymentIntent = httpsCallable(
   functions,
   "createPaymentIntent"
 );
+export const createPaymentSheet = httpsCallable(
+  functions,
+  "createPaymentSheet"
+);
+export const getPaymentMethods = httpsCallable(functions, "getPaymentMethods");

@@ -12,6 +12,8 @@ import {
 import React, { useRef, useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
+// redux
+import { useSelector } from "react-redux";
 // firebase
 import { auth, createPaymentIntent } from "../firebase";
 import { child, getDatabase, ref, update, remove } from "firebase/database";
@@ -41,6 +43,12 @@ const Task = ({ taskData, index }) => {
   const [valueDate, setValueData] = useState(taskTime);
   //useRef
   const alertShownRef = useRef(false);
+
+  // useSeloctor
+  const customerId = useSelector((state) => state.customer.customer);
+  const paymentMethods = useSelector(
+    (state) => state.paymentMethods.paymentMethods
+  );
 
   let dateParts = date.split(" ");
   let resultDate = dateParts[1] + " " + dateParts[2];
@@ -89,37 +97,15 @@ const Task = ({ taskData, index }) => {
       .catch((error) => {});
   };
 
-  const fetchClientSecret = async () => {
-    const response = await createPaymentIntent({
-      amount: 1000,
-      currency: "usd",
-    });
-    const newClientSecret = response.data.clientSecret;
-    return newClientSecret;
-  };
-
   const handlePay = async () => {
     try {
-      const newClientSecret = await fetchClientSecret();
-      const { paymentMethod, error: errorPaymentMethod } =
-        await stripe.createPaymentMethod({
-          paymentMethodType: "Card",
-        });
-      if (errorPaymentMethod) {
-        console.error("Error creating payment method:", errorPaymentMethod);
-      } else {
-        const { error } = await stripe.confirmPayment(
-          newClientSecret,
-          paymentMethod
-        );
-        if (error) {
-          console.error("Error processing payment:", error);
-        } else {
-          console.log("Payment successful!");
-        }
-      }
+      await createPaymentIntent({
+        customerId: customerId,
+        paymentMethodId: paymentMethods.data[0].id,
+      });
+      console.log("決済処理が成功しました");
     } catch (error) {
-      console.error("Error processing payment:", error);
+      console.error("エラーが発生しました:", error);
     }
   };
   useEffect(() => {

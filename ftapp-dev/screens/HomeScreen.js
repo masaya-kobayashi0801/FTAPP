@@ -42,8 +42,7 @@ const HomeScreen = () => {
   const [fetchData, setFetchData] = useState(null);
   const [showDateErrorText, setShowDateErrorText] = useState(false);
 
-  const cardDetails = useSelector((state) => state.cardDetails.cardDetails);
-  const clientSecret = useSelector((state) => state.clientSecret.clientSecret);
+  const customerId = useSelector((state) => state.customer.customer);
   const localeTime = date.toLocaleTimeString("ja-JP", { hour12: false });
   const timeParts = localeTime.split(":");
   timeParts[2] = "00";
@@ -147,7 +146,7 @@ const HomeScreen = () => {
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => {
-          isObjectEmpty(cardDetails) ? showAlert() : setModalVisible(true);
+          isObjectEmpty(customerId) ? showAlert() : setModalVisible(true);
           setDate(new Date());
         }}
       >
