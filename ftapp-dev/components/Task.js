@@ -112,12 +112,12 @@ const Task = ({ taskData, index }) => {
     const intervalId = setInterval(() => {
       const now = new Date();
       const diff = taskTime - now;
-
       if (diff > 0) {
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        console.log(`${hours} hours, ${minutes} minutes, ${seconds} seconds`);
+        const diffTime = `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+        console.log("diffTime", diffTime);
         if (hours === 0 && minutes <= 15 && !alertShownRef.current) {
           setEnabled(true);
           alertShownRef.current = true;
@@ -129,6 +129,12 @@ const Task = ({ taskData, index }) => {
           }
           writeTaskDelete();
         }
+      } else if (0 > diff) {
+        if (selectedStatus === "To Do") {
+          handlePay();
+          Alert.alert("罰金", "自分で設定した開始時間を守れませんでした");
+        }
+        writeTaskDelete();
       } else {
         clearInterval(intervalId);
       }
@@ -138,7 +144,7 @@ const Task = ({ taskData, index }) => {
       clearInterval(intervalId);
       alertShownRef.current = false;
     };
-  }, [selectedStatus]);
+  }, []);
 
   return (
     <View>
