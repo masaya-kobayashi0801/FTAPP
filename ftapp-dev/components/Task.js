@@ -125,14 +125,14 @@ const Task = ({ taskData, index }) => {
         if (hours === 0 && minutes === 0 && seconds === 1) {
           if (selectedStatus === "To Do") {
             handlePay();
-            Alert.alert("罰金", "自分で設定した開始時間を守れませんでした");
+            Alert.alert("罰金", `${taskData.task}の開始時間を守れませんでした`);
           }
           writeTaskDelete();
         }
       } else if (0 > diff) {
         if (selectedStatus === "To Do") {
           handlePay();
-          Alert.alert("罰金", "自分で設定した開始時間を守れませんでした");
+          Alert.alert("罰金", `${taskData.task}の開始時間を守れませんでした`);
         }
         writeTaskDelete();
       } else {
