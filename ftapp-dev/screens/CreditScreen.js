@@ -119,9 +119,9 @@ const CreditScreen = () => {
         <TouchableOpacity
           style={[
             styles.buttonContainer,
-            { backgroundColor: registerComplete ? "#808080" : "2196F3" },
+            { backgroundColor: registerComplete ? "#696969" : "#2196F3" },
           ]}
-          disabled={!loading || registerComplete}
+          disabled={registerComplete}
           onPress={openPaymentSheet}
         >
           {/* テキスト名変更する */}
