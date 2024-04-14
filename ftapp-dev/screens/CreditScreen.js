@@ -32,11 +32,12 @@ const CreditScreen = () => {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   // 後ほど削除
-  const initState = () => {
-    dispatch(createCardDetails({}));
-    dispatch(createClientSecret(""));
-    dispatch(createCustomer(""));
-  };
+  // const initState = () => {
+  //   dispatch(createCardDetails({}));
+  //   dispatch(createClientSecret(""));
+  //   dispatch(createCustomer(""));
+  //   setRegisterComplete(false);
+  // };
 
   // PaymentSheetからパラメーター取得
   const fetchPaymentSheetParams = async () => {
@@ -113,9 +114,9 @@ const CreditScreen = () => {
   return (
     <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
       <View>
-        <TouchableOpacity style={[styles.buttonContainer]} onPress={initState}>
+        {/* <TouchableOpacity style={[styles.buttonContainer]} onPress={initState}>
           <Text style={styles.buttonText}>initState</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           style={[
             styles.buttonContainer,
