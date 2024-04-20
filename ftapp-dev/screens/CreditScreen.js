@@ -25,9 +25,11 @@ const CreditScreen = () => {
   const dispatch = useDispatch();
   const clientSecret = useSelector((state) => state.clientSecret.clientSecret);
   const customerId = useSelector((state) => state.customer.customer);
+  console.log("cusomerId", customerId);
   const paymentMethods = useSelector(
     (state) => state.paymentMethods.paymentMethods
   );
+  console.log("paymentMethods", paymentMethods);
   // stripe
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
@@ -36,6 +38,7 @@ const CreditScreen = () => {
   //   dispatch(createCardDetails({}));
   //   dispatch(createClientSecret(""));
   //   dispatch(createCustomer(""));
+  //   dispatch(createPaymentMethods(""));
   //   setRegisterComplete(false);
   // };
 
@@ -114,15 +117,22 @@ const CreditScreen = () => {
   return (
     <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
       <View>
-        {/* <TouchableOpacity style={[styles.buttonContainer]} onPress={initState}>
+        {/*
+      <TouchableOpacity style={[styles.buttonContainer]} onPress={initState}>
           <Text style={styles.buttonText}>initState</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
+      */}
         <TouchableOpacity
           style={[
             styles.buttonContainer,
-            { backgroundColor: registerComplete ? "#696969" : "#2196F3" },
+            {
+              backgroundColor:
+                paymentMethods.data && paymentMethods.data.length > 0
+                  ? "#696969"
+                  : "#2196F3",
+            },
           ]}
-          disabled={registerComplete}
+          disabled={paymentMethods.data && paymentMethods.data.length > 0}
           onPress={openPaymentSheet}
         >
           {/* テキスト名変更する */}
