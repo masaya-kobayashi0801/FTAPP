@@ -63,11 +63,9 @@ export default function App() {
                       let iconName;
 
                       if (route.name === "Home") {
-                        iconName = focused
-                          ? "md-checkbox"
-                          : "md-checkbox-outline";
+                        iconName = focused ? "checkbox" : "checkbox-outline";
                       } else if (route.name === "Timer") {
-                        iconName = focused ? "md-timer" : "md-timer-outline";
+                        iconName = focused ? "timer" : "timer-outline";
                       } else if (route.name === "Credit") {
                         iconName = focused ? "card" : "card-outline";
                       }
