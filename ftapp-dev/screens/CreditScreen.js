@@ -34,13 +34,13 @@ const CreditScreen = () => {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   // 後ほど削除
-  // const initState = () => {
-  //   dispatch(createCardDetails({}));
-  //   dispatch(createClientSecret(""));
-  //   dispatch(createCustomer(""));
-  //   dispatch(createPaymentMethods(""));
-  //   setRegisterComplete(false);
-  // };
+  const initState = () => {
+    dispatch(createCardDetails({}));
+    dispatch(createClientSecret(""));
+    dispatch(createCustomer(""));
+    dispatch(createPaymentMethods(""));
+    setRegisterComplete(false);
+  };
 
   // PaymentSheetからパラメーター取得
   const fetchPaymentSheetParams = async () => {
@@ -68,6 +68,7 @@ const CreditScreen = () => {
     });
     console.log("error", error);
     if (!error) {
+      console.log("initPaymentSheet 成功");
       setLoading(true);
     }
   };
@@ -117,11 +118,9 @@ const CreditScreen = () => {
   return (
     <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
       <View>
-        {/*
-      <TouchableOpacity style={[styles.buttonContainer]} onPress={initState}>
+        <TouchableOpacity style={[styles.buttonContainer]} onPress={initState}>
           <Text style={styles.buttonText}>initState</Text>
         </TouchableOpacity>
-      */}
         <TouchableOpacity
           style={[
             styles.buttonContainer,

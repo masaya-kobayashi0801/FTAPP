@@ -43,6 +43,10 @@ const HomeScreen = () => {
   const [showDateErrorText, setShowDateErrorText] = useState(false);
 
   const customerId = useSelector((state) => state.customer.customer);
+  const paymentMethods = useSelector(
+    (state) => state.paymentMethods.paymentMethods
+  );
+  console.log("home paymentMethods", paymentMethods);
   const localeTime = date.toLocaleTimeString("ja-JP", { hour12: false });
   const timeParts = localeTime.split(":");
   timeParts[2] = "00";
@@ -146,7 +150,10 @@ const HomeScreen = () => {
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => {
-          isObjectEmpty(customerId) ? showAlert() : setModalVisible(true);
+          paymentMethods.data && paymentMethods.data.length > 0
+            ? setModalVisible(true)
+            : showAlert();
+
           setDate(new Date());
         }}
       >
