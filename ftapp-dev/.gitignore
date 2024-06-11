@@ -20,5 +20,7 @@ web-build/
 .env
 
 #firebase
-.firebaserc
 firebase.js
+
+# Ignore the blob directory
+blob/
